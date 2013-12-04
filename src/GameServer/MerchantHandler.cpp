@@ -147,7 +147,8 @@ void CUser::MerchantItemAdd(Packet & pkt)
 	if (pSrcItem == nullptr || pSrcItem->nNum != nItemID 
 		|| pSrcItem->sCount < sCount
 		|| pSrcItem->isRented()
-		|| pSrcItem->isSealed())
+		|| pSrcItem->isSealed()
+		|| pSrcItem->isBound())
 		return;
 
 	_MERCH_DATA *pMerch = &m_arMerchantItems[bDstPos];
