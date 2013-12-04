@@ -384,7 +384,24 @@ void CNpc::OnDeathProcess(Unit *pKiller)
 */
 void CNpc::OnRespawn()
 {
+	if (m_sSid == ELMORAD_MONUMENT_SID
+		|| m_sSid == ASGA_VILLAGE_MONUMENT_SID
+		|| m_sSid == RAIBA_VILLAGE_MONUMENT_SID
+		|| m_sSid == DODO_CAMP_MONUMENT_SID
+		|| m_sSid == LUFERSON_MONUMENT_SID
+		|| m_sSid == LINATE_MONUMENT_SID
+		|| m_sSid == BELLUA_MONUMENT_SID
+		|| m_sSid == LAON_CAMP_MONUMENT_SID)
+	{
 
+		_MONUMENT_INFORMATION * pData = new	_MONUMENT_INFORMATION();
+		pData->sSid = m_sSid;
+		pData->sNid = m_sNid;
+		pData->RepawnedTime = int32(UNIXTIME);
+
+		if (!g_pMain->m_NationMonumentInformationArray.PutData(pData->sSid, pData))
+			delete pData;
+	}
 }
 
 /**
@@ -499,35 +516,13 @@ void CNpc::NationMonumentProcess(CUser *pUser)
 		g_pMain->NpcUpdate(m_sSid, m_bMonster, pUser->GetNation());
 		g_pMain->Announcement(DECLARE_NATION_MONUMENT_STATUS, Nation::ALL, m_sSid, pUser);
 
-		uint16 nTrapNumber = pUser->GetZoneID() == ZONE_KARUS ?  m_sSid - 20301 : m_sSid - 10301;
-		int16 nBonusNP = nTrapNumber == 0 ? 200 : 50;
+		uint16 sSid = 0;
 
-		std::vector<Unit *> distributed_member;
-		std::vector<uint16> unitList;
-		g_pMain->GetUnitListFromSurroundingRegions(pUser, &unitList);
+		foreach_stlmap_nolock (itr, g_pMain->m_NationMonumentInformationArray)
+			if (itr->second->sSid == (pUser->GetNation() == KARUS ? m_sSid + 10000 : m_sSid - 10000))
+				sSid = itr->second->sSid;
 
-		foreach (itr, unitList)
-		{		
-			Unit * pTarget = g_pMain->GetUnitPtr(*itr);
-
-			if(pTarget == nullptr || pTarget->isNPC())
-				continue; 
-
-			if (pTarget->GetNation() == pUser->GetNation() && pTarget->isInRangeSlow(pUser,RANGE_50M))
-				distributed_member.push_back(pTarget);
-		}
-
-		foreach (itr, distributed_member)
-		{
-			Unit * pTarget = *itr;
-
-			if(pTarget == nullptr || pTarget->isNPC())
-				continue;
-
-			// Daha Sonrasında Süre ile NP Verecek...
-			TO_USER(pTarget)->SendLoyaltyChange(nBonusNP);
-		}
-
-		g_pMain->Announcement(DECLARE_NATION_REWARD_STATUS, Nation::ALL, m_sSid, pUser);
+		if (sSid != 0)
+			g_pMain->m_NationMonumentInformationArray.DeleteData(sSid);
 	}
 }

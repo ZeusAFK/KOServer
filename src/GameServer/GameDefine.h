@@ -679,6 +679,13 @@ struct _USER_DAILY_OP
 	int32 UserLoyaltyWingRewardTime;
 };
 
+struct _MONUMENT_INFORMATION
+{
+	uint16 sSid;
+	uint16 sNid;
+	int32 RepawnedTime;
+};
+
 enum BuffType
 {
 	BUFF_TYPE_NONE					= 0,

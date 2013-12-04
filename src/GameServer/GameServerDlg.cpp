@@ -1689,6 +1689,8 @@ void CGameServerDlg::BattleZoneOpenTimer()
 				m_sBattleTimeDelay = 0;
 				Announcement(UNDER_ATTACK_NOTIFY);
 			}
+
+			CheckNationMonumentRewards();
 		}
 		else if (WarElapsedTime >=  m_byBattleTime) // War is over.
 			BattleZoneClose();
@@ -1927,6 +1929,7 @@ void CGameServerDlg::ResetBattleZone()
 	m_sKarusMonuments = 0;
 	m_sElmoMonuments = 0;
 	m_sBattleTimeDelay = 0;
+	m_NationMonumentInformationArray.DeleteAllData();
 }
 
 void CGameServerDlg::TempleEventTimer()
@@ -2228,7 +2231,7 @@ void CGameServerDlg::TempleEventKickOutUser(CUser *pUser)
 	}
 }
 
-void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser* pExceptUser)
+void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser* pExceptUser, CNpc *pExpectNpc)
 {
 	string chatstr; 
 
@@ -2283,7 +2286,7 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 	case DECLARE_NATION_MONUMENT_STATUS:
 		if (pExceptUser)
 		{
-			uint16 nTrapNumber = pExceptUser->GetZoneID() == ZONE_KARUS ?  chat_type - 20301 : chat_type - 10301;
+			uint16 nTrapNumber = pExceptUser->GetZoneID() == ZONE_KARUS ?  chat_type - LUFERSON_MONUMENT_SID : chat_type - ELMORAD_MONUMENT_SID;
 
 			GetServerResource(IDS_INFILTRATION_CONQUER, &chatstr, GetBattleAndNationMonumentName(nTrapNumber, pExceptUser->GetZoneID()).c_str());
 			g_pMain->SendAnnouncement(chatstr.c_str(), pExceptUser->GetNation());
@@ -2293,11 +2296,11 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 		}
 		break;
 	case DECLARE_NATION_REWARD_STATUS:
-		if (pExceptUser)
+		if (pExpectNpc)
 		{
-			uint16 nTrapNumber = pExceptUser->GetZoneID() == ZONE_KARUS ?  chat_type - 20301 : chat_type - 10301;
+			uint16 nTrapNumber = pExpectNpc->GetZoneID() == ZONE_KARUS ?  chat_type - LUFERSON_MONUMENT_SID : chat_type - ELMORAD_MONUMENT_SID;
 
-			GetServerResource(pExceptUser->GetNation() == KARUS ? IDS_INFILTRATION_REWARD_KARUS : IDS_INFILTRATION_REWARD_ELMORAD, &chatstr, GetBattleAndNationMonumentName(nTrapNumber, pExceptUser->GetZoneID()).c_str());
+			GetServerResource(pExpectNpc->GetNation() == KARUS ? IDS_INFILTRATION_REWARD_KARUS : IDS_INFILTRATION_REWARD_ELMORAD, &chatstr, GetBattleAndNationMonumentName(nTrapNumber, pExpectNpc->GetZoneID()).c_str());
 			g_pMain->SendAnnouncement(chatstr.c_str(), Nation::ALL);
 			return;
 		}
@@ -2658,4 +2661,55 @@ std::string CGameServerDlg::GetBattleAndNationMonumentName(int16 TrapNumber, uin
 	}
 
 	return sMonumentName;
+}
+
+void CGameServerDlg::CheckNationMonumentRewards()
+{
+	std::vector<uint16> deleted;
+
+	foreach_stlmap_nolock (itr, g_pMain->m_NationMonumentInformationArray)
+	{
+		if (int32(UNIXTIME) - itr->second->RepawnedTime < NATION_MONUMENT_REWARD_SECOND)
+			continue;
+
+		CNpc *pNpc = GetNpcPtr(itr->second->sNid);
+
+		if (pNpc == nullptr)
+		{
+			deleted.push_back(itr->second->sSid);
+			continue;
+		}
+
+		uint16 nTrapNumber = pNpc->GetZoneID() == ZONE_KARUS ?  itr->second->sSid - LUFERSON_MONUMENT_SID : itr->second->sSid - ELMORAD_MONUMENT_SID;
+
+		std::vector<Unit *> distributed_member;
+		std::vector<uint16> unitList;
+		g_pMain->GetUnitListFromSurroundingRegions(pNpc, &unitList);
+
+		foreach (itrx, unitList)
+		{		
+			Unit * pTarget = g_pMain->GetUnitPtr(*itrx);
+
+			if(pTarget == nullptr || pTarget->isNPC())
+				continue; 
+
+			if (pTarget->GetNation() == pNpc->GetNation() && pTarget->isInRangeSlow(pNpc,RANGE_50M))
+				distributed_member.push_back(pTarget);
+		}
+
+		foreach (itry, distributed_member)
+		{
+			Unit * pTarget = *itry;
+
+			if(pTarget == nullptr || pTarget->isNPC())
+				continue;
+
+			TO_USER(pTarget)->SendLoyaltyChange(nTrapNumber == 0 ? 200 : 50);
+		}
+
+		g_pMain->Announcement(DECLARE_NATION_REWARD_STATUS, Nation::ALL, itr->second->sSid, nullptr, pNpc);
+	}
+
+	foreach (itr, deleted)
+		g_pMain->m_NationMonumentInformationArray.DeleteData(*itr);
 }

@@ -24,6 +24,9 @@ typedef	std::map<uint32, time_t>			UserSavedMagicMap;
 #define PLAYER_R_HIT_REQUEST_INTERVAL	1.0f
 // Time (in minute) for daily operations
 #define DAILY_OPERATIONS_MINUTE			1440
+// Time (in seconds) for nation monuments
+#define NATION_MONUMENT_REWARD_SECOND	120
+
 enum GameState
 {
 	GAME_STATE_CONNECTED,

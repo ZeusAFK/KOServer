@@ -94,7 +94,7 @@ public:
 	void WritePacketLog();
 	uint16 GetKnightsAllMembers(uint16 sClanID, Packet & result, uint16 & pktSize, bool bClanLeader);
 	void GetUserRank(CUser *pUser);
-	void Announcement(uint16 type, int nation=0, int chat_type=8, CUser* pExceptUser = nullptr);
+	void Announcement(uint16 type, int nation=0, int chat_type=8, CUser* pExceptUser = nullptr, CNpc *pExpectNpc = nullptr);
 	void ResetBattleZone();
 	void BanishLosers();
 	void BattleZoneVictoryCheck();
@@ -124,6 +124,7 @@ public:
 	void TempleEventSendActiveEventTime(CUser *pUser);
 	void TempleEventKickOutUser(CUser *pUser);
 	std::string GetBattleAndNationMonumentName(int16 TrapNumber = -1, uint8 ZoneID = 0);
+	void CheckNationMonumentRewards();
 
 	void AddDatabaseRequest(Packet & pkt, CUser *pUser = nullptr);
 
@@ -359,6 +360,7 @@ public:
 	UserDailyOpMap				m_UserDailyOpMap;
 	TempleEventUserArray		m_TempleEventUserArray;
 	EventTriggerArray			m_EventTriggerArray;
+	NationMonumentInformationArray	m_NationMonumentInformationArray;
 
 	Atomic<uint16>				m_sPartyIndex;
 	short	m_sZoneCount;							// AI Server 재접속시 사용

@@ -65,3 +65,4 @@ typedef std::unordered_map<std::string, _USER_DAILY_OP *>		UserDailyOpMap;
 typedef CSTLMap <_TEMPLE_EVENT_USER>			TempleEventUserArray;
 
 typedef CSTLMap <_EVENT_TRIGGER>			EventTriggerArray;
+typedef CSTLMap <_MONUMENT_INFORMATION>		NationMonumentInformationArray;
