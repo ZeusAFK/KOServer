@@ -162,7 +162,7 @@ void CUser::ReqLetterSend(Packet & pkt)
 				bResult = -1;
 		// Untradeable item
 		else if (pTable->m_bRace == RACE_UNTRADEABLE || nItemID >= ITEM_GOLD
-			|| pItem->isSealed() || pItem->isRented())
+			|| pItem->isSealed() || pItem->isRented() || pItem->isBound())
 			bResult = -32;
 	}
 
