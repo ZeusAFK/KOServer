@@ -148,7 +148,8 @@ void CUser::ExchangeAdd(Packet & pkt)
 	{
 		if (pSrcItem->sCount < count
 			|| pSrcItem->isRented()
-			|| pSrcItem->isSealed())
+			|| pSrcItem->isSealed()
+			|| pSrcItem->isBound())
 			goto add_fail;
 
 		if (pTable->m_bCountable)
