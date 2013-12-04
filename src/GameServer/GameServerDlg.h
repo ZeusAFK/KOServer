@@ -123,6 +123,7 @@ public:
 	void TempleEventGetActiveEventTime(CUser *pUser);
 	void TempleEventSendActiveEventTime(CUser *pUser);
 	void TempleEventKickOutUser(CUser *pUser);
+	std::string GetBattleAndNationMonumentName(int16 TrapNumber = -1, uint8 ZoneID = 0);
 
 	void AddDatabaseRequest(Packet & pkt, CUser *pUser = nullptr);
 

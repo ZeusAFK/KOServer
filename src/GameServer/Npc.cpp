@@ -88,6 +88,8 @@ void CNpc::GetInOut(Packet & result, uint8 bType)
 	result << bType << GetID();
 	if (bType != INOUT_OUT)
 		GetNpcInfo(result);
+
+	OnRespawn();
 }
 
 /**
@@ -375,6 +377,14 @@ void CNpc::OnDeathProcess(Unit *pKiller)
 			}
 		}
 	}
+}
+
+/**
+* @brief	Executes the Npc respawn.
+*/
+void CNpc::OnRespawn()
+{
+
 }
 
 /**

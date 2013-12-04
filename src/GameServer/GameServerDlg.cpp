@@ -2273,26 +2273,9 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 	case DECLARE_BATTLE_MONUMENT_STATUS:
 		if (pExceptUser)
 		{
-			std::string sMonumentName = "DECLARE_BATTLE_MONUMENT_STATUS";
-
-			if (chat_type == 1)
-				sMonumentName = "El Morad main territory";
-			else if (chat_type == 2)
-				sMonumentName = "El Morad provision line";
-			else if (chat_type == 3)
-				sMonumentName = "Lake of Life";
-			else if (chat_type == 4)
-				sMonumentName = "Foss Castle";
-			else if (chat_type == 5)
-				sMonumentName = "Karus main territory";
-			else if (chat_type == 6)
-				sMonumentName = "Karus provision line";
-			else if (chat_type == 7)
-				sMonumentName = "Swamp of Shadows";
-
-			GetServerResource(IDS_BATTLE_MONUMENT_WON_MESSAGE, &chatstr, sMonumentName.c_str());
+			GetServerResource(IDS_BATTLE_MONUMENT_WON_MESSAGE, &chatstr, GetBattleAndNationMonumentName(chat_type).c_str());
 			g_pMain->SendNotice<PUBLIC_CHAT>(chatstr.c_str(),pExceptUser->GetZoneID(),pExceptUser->GetNation());
-			GetServerResource(IDS_BATTLE_MONUMENT_LOST_MESSAGE, &chatstr, sMonumentName.c_str());
+			GetServerResource(IDS_BATTLE_MONUMENT_LOST_MESSAGE, &chatstr, GetBattleAndNationMonumentName(chat_type).c_str());
 			g_pMain->SendNotice<PUBLIC_CHAT>(chatstr.c_str(),pExceptUser->GetZoneID(),pExceptUser->GetNation() == KARUS ? ELMORAD : KARUS);
 			return;
 		}
@@ -2300,21 +2283,11 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 	case DECLARE_NATION_MONUMENT_STATUS:
 		if (pExceptUser)
 		{
-			std::string sMonumentName = "DECLARE_NATION_MONUMENT_STATUS";
 			uint16 nTrapNumber = pExceptUser->GetZoneID() == ZONE_KARUS ?  chat_type - 20301 : chat_type - 10301;
 
-			if (nTrapNumber == 0)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Luferson" : "El Morad");
-			else if (nTrapNumber == 1)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Bellua" : "Asga Village");
-			else if (nTrapNumber == 2)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Linate" : "Raiba Village");
-			else if (nTrapNumber == 3)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Laon Camp" : "Dodo Camp");
-
-			GetServerResource(IDS_INFILTRATION_CONQUER, &chatstr, sMonumentName.c_str());
+			GetServerResource(IDS_INFILTRATION_CONQUER, &chatstr, GetBattleAndNationMonumentName(nTrapNumber, pExceptUser->GetZoneID()).c_str());
 			g_pMain->SendAnnouncement(chatstr.c_str(), pExceptUser->GetNation());
-			GetServerResource(IDS_INFILTRATION_RECAPTURE, &chatstr, sMonumentName.c_str());
+			GetServerResource(IDS_INFILTRATION_RECAPTURE, &chatstr, GetBattleAndNationMonumentName(nTrapNumber, pExceptUser->GetZoneID()).c_str());
 			g_pMain->SendAnnouncement(chatstr.c_str(), pExceptUser->GetNation() == KARUS ? ELMORAD : KARUS);
 			return;
 		}
@@ -2322,19 +2295,9 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 	case DECLARE_NATION_REWARD_STATUS:
 		if (pExceptUser)
 		{
-			std::string sMonumentName = "DECLARE_NATION_MONUMENT_STATUS";
 			uint16 nTrapNumber = pExceptUser->GetZoneID() == ZONE_KARUS ?  chat_type - 20301 : chat_type - 10301;
 
-			if (nTrapNumber == 0)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Luferson" : "El Morad");
-			else if (nTrapNumber == 1)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Bellua" : "Asga Village");
-			else if (nTrapNumber == 2)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Linate" : "Raiba Village");
-			else if (nTrapNumber == 3)
-				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Laon Camp" : "Dodo Camp");
-
-			GetServerResource(pExceptUser->GetNation() == KARUS ? IDS_INFILTRATION_REWARD_KARUS : IDS_INFILTRATION_REWARD_ELMORAD, &chatstr, sMonumentName.c_str());
+			GetServerResource(pExceptUser->GetNation() == KARUS ? IDS_INFILTRATION_REWARD_KARUS : IDS_INFILTRATION_REWARD_ELMORAD, &chatstr, GetBattleAndNationMonumentName(nTrapNumber, pExceptUser->GetZoneID()).c_str());
 			g_pMain->SendAnnouncement(chatstr.c_str(), Nation::ALL);
 			return;
 		}
@@ -2659,4 +2622,40 @@ CGameServerDlg::~CGameServerDlg()
 
 	CleanupUserRankings();
 	m_LevelUpArray.clear();
+}
+
+std::string CGameServerDlg::GetBattleAndNationMonumentName(int16 TrapNumber, uint8 ZoneID)
+{
+	std::string sMonumentName = ZoneID == 0 ? "DECLARE_BATTLE_MONUMENT_STATUS" : "DECLARE_NATION_MONUMENT_STATUS";
+
+	if (ZoneID == 0)
+	{
+		if (TrapNumber == 1)
+			sMonumentName = "El Morad main territory";
+		else if (TrapNumber == 2)
+			sMonumentName = "El Morad provision line";
+		else if (TrapNumber == 3)
+			sMonumentName = "Lake of Life";
+		else if (TrapNumber == 4)
+			sMonumentName = "Foss Castle";
+		else if (TrapNumber == 5)
+			sMonumentName = "Karus main territory";
+		else if (TrapNumber == 6)
+			sMonumentName = "Karus provision line";
+		else if (TrapNumber == 7)
+			sMonumentName = "Swamp of Shadows";
+	}
+	else
+	{
+		if (TrapNumber == 0)
+			sMonumentName = string_format("%s Monument", ZoneID == ZONE_KARUS ? "Luferson" : "El Morad");
+		else if (TrapNumber == 1)
+			sMonumentName = string_format("%s Monument", ZoneID == ZONE_KARUS ? "Bellua" : "Asga Village");
+		else if (TrapNumber == 2)
+			sMonumentName = string_format("%s Monument", ZoneID == ZONE_KARUS ? "Linate" : "Raiba Village");
+		else if (TrapNumber == 3)
+			sMonumentName = string_format("%s Monument", ZoneID == ZONE_KARUS ? "Laon Camp" : "Dodo Camp");
+	}
+
+	return sMonumentName;
 }
