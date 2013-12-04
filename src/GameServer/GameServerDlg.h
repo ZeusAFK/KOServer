@@ -493,6 +493,7 @@ public:
 	COMMAND_HANDLER(HandleReloadTablesCommand);
 	COMMAND_HANDLER(HandleCountCommand);
 	COMMAND_HANDLER(HandlePermitConnectCommand);
+	COMMAND_HANDLER(HandleWarResultCommand);
 };
 
 extern CGameServerDlg * g_pMain;

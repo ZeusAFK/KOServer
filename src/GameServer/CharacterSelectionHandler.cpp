@@ -166,7 +166,7 @@ void CUser::SelectCharacter(Packet & pkt)
 		m_bFame = CHIEF;
 
 	// Disallow players from relogging in the opposite nation's home zone when an invasion's not running.
-	if ((GetZoneID() != GetNation() && GetZoneID() <= ZONE_ELMORAD && !g_pMain->m_byBattleOpen)
+	if (((GetZoneID() != GetNation() && GetZoneID() <= ZONE_ELMORAD && !g_pMain->m_byBattleOpen)
 		// also disallow players from logging back into war zones that aren't currently active...
 			|| (GetMap()->isWarZone() && (GetZoneID() - ZONE_BATTLE_BASE) != g_pMain->m_byBattleZone)
 			// Chaos, bdw and juraid montuain
@@ -176,7 +176,7 @@ void CUser::SelectCharacter(Packet & pkt)
 			|| GetZoneID() == ZONE_ARDREAM 
 			|| GetZoneID() == ZONE_RONARK_LAND_BASE
 			|| GetZoneID() == ZONE_BIFROST
-			|| GetZoneID() == ZONE_KROWAZ_DOMINION)))
+			|| GetZoneID() == ZONE_KROWAZ_DOMINION)) && !isGM()))
 	{
 		NativeZoneReturn();
 		Disconnect();

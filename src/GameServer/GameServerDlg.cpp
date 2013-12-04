@@ -1790,7 +1790,7 @@ void CGameServerDlg::BattleWinnerResult(BattleWinnerTypes winnertype)
 
 void CGameServerDlg::BattleZoneOpen(int nType, uint8 bZone /*= 0*/)
 {
-	if(nType == BATTLEZONE_OPEN || nType == SNOW_BATTLEZONE_OPEN)
+	if ((nType == BATTLEZONE_OPEN || nType == SNOW_BATTLEZONE_OPEN) && m_byBattleOpen == NO_BATTLE)
 	{
 		m_byBattleOpen = nType == BATTLEZONE_OPEN ? NATION_BATTLE : SNOW_BATTLE;	
 		m_byOldBattleOpen = nType == BATTLEZONE_OPEN ? NATION_BATTLE : SNOW_BATTLE;
@@ -1807,7 +1807,7 @@ void CGameServerDlg::BattleZoneOpen(int nType, uint8 bZone /*= 0*/)
 		KickOutZoneUsers(ZONE_BIFROST);
 		KickOutZoneUsers(ZONE_KROWAZ_DOMINION);
 	}
-	else if (nType == BATTLEZONE_CLOSE)
+	else if (nType == BATTLEZONE_CLOSE && m_byBattleOpen != NO_BATTLE)
 		Announcement(BATTLEZONE_CLOSE);
 	else
 		return;
@@ -2259,7 +2259,7 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 		if (m_bVictory == KARUS || m_bVictory == ELMORAD)
 			GetServerResource(IDS_BANISH_LOSER, &chatstr);
 		else
-		GetServerResource(IDS_BANISH_USER, &chatstr);
+			GetServerResource(IDS_BANISH_USER, &chatstr);
 		break;
 	case DECLARE_BATTLE_ZONE_STATUS:
 		if (m_byBattleZone + ZONE_BATTLE_BASE == ZONE_BATTLE4)
@@ -2273,7 +2273,7 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 	case DECLARE_BATTLE_MONUMENT_STATUS:
 		if (pExceptUser)
 		{
-			std::string sMonumentName = "";
+			std::string sMonumentName = "DECLARE_BATTLE_MONUMENT_STATUS";
 
 			if (chat_type == 1)
 				sMonumentName = "El Morad main territory";
@@ -2297,57 +2297,45 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 			return;
 		}
 		break;
-	case DECLARE_WIN_MONUMENT_STATUS:
+	case DECLARE_NATION_MONUMENT_STATUS:
 		if (pExceptUser)
 		{
-			std::string sMonumentName = "";
+			std::string sMonumentName = "DECLARE_NATION_MONUMENT_STATUS";
+			uint16 nTrapNumber = pExceptUser->GetZoneID() == ZONE_KARUS ?  chat_type - 20301 : chat_type - 10301;
 
-			if (chat_type == 1)
-				sMonumentName = "El Morad Monument";
-			else if (chat_type == 2)
-				sMonumentName = "Asga Village Monument";
-			else if (chat_type == 3)
-				sMonumentName = "Raiba Village Monument";
-			else if (chat_type == 4)
-				sMonumentName = "Doda Camp Monument";
-			else if (chat_type == 5)
-				sMonumentName = "Luferson Monument";
-			else if (chat_type == 6)
-				sMonumentName = "Linate Monument";
-			else if (chat_type == 7)
-				sMonumentName = "Bellua monument";
-			else if (chat_type == 8)
-				sMonumentName = "Laon Camp Monument";
+			if (nTrapNumber == 0)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Luferson" : "El Morad");
+			else if (nTrapNumber == 1)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Bellua" : "Asga Village");
+			else if (nTrapNumber == 2)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Linate" : "Raiba Village");
+			else if (nTrapNumber == 3)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Laon Camp" : "Dodo Camp");
 
 			GetServerResource(IDS_INFILTRATION_CONQUER, &chatstr, sMonumentName.c_str());
-			g_pMain->SendAnnouncement(chatstr.c_str());
+			g_pMain->SendAnnouncement(chatstr.c_str(), pExceptUser->GetNation());
+			GetServerResource(IDS_INFILTRATION_RECAPTURE, &chatstr, sMonumentName.c_str());
+			g_pMain->SendAnnouncement(chatstr.c_str(), pExceptUser->GetNation() == KARUS ? ELMORAD : KARUS);
 			return;
 		}
 		break;
-	case DECLARE_LOST_MONUMENT_STATUS:
+	case DECLARE_NATION_REWARD_STATUS:
 		if (pExceptUser)
 		{
-			std::string sMonumentName = "";
+			std::string sMonumentName = "DECLARE_NATION_MONUMENT_STATUS";
+			uint16 nTrapNumber = pExceptUser->GetZoneID() == ZONE_KARUS ?  chat_type - 20301 : chat_type - 10301;
 
-			if (chat_type == 1)
-				sMonumentName = "El Morad Monument";
-			else if (chat_type == 2)
-				sMonumentName = "Asga Village Monument";
-			else if (chat_type == 3)
-				sMonumentName = "Raiba Village Monument";
-			else if (chat_type == 4)
-				sMonumentName = "Doda Camp Monument";
-			else if (chat_type == 5)
-				sMonumentName = "Luferson Monument";
-			else if (chat_type == 6)
-				sMonumentName = "Linate Monument";
-			else if (chat_type == 7)
-				sMonumentName = "Bellua monument";
-			else if (chat_type == 8)
-				sMonumentName = "Laon Camp Monument";
+			if (nTrapNumber == 0)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Luferson" : "El Morad");
+			else if (nTrapNumber == 1)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Bellua" : "Asga Village");
+			else if (nTrapNumber == 2)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Linate" : "Raiba Village");
+			else if (nTrapNumber == 3)
+				sMonumentName = string_format("%s Monument", pExceptUser->GetZoneID() == ZONE_KARUS ? "Laon Camp" : "Dodo Camp");
 
-			GetServerResource(IDS_INFILTRATION_RECAPTURE, &chatstr, sMonumentName.c_str());
-			g_pMain->SendAnnouncement(chatstr.c_str());
+			GetServerResource(pExceptUser->GetNation() == KARUS ? IDS_INFILTRATION_REWARD_KARUS : IDS_INFILTRATION_REWARD_ELMORAD, &chatstr, sMonumentName.c_str());
+			g_pMain->SendAnnouncement(chatstr.c_str(), Nation::ALL);
 			return;
 		}
 		break;

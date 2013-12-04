@@ -487,18 +487,37 @@ void CNpc::NationMonumentProcess(CUser *pUser)
 	if (pUser && g_pMain->m_byBattleOpen == NATION_BATTLE)
 	{
 		g_pMain->NpcUpdate(m_sSid, m_bMonster, pUser->GetNation());
+		g_pMain->Announcement(DECLARE_NATION_MONUMENT_STATUS, Nation::ALL, m_sSid, pUser);
 
-		if (pUser->GetNation() == KARUS && pUser->GetZoneID() == KARUS)
-		g_pMain->Announcement(DECLARE_LOST_MONUMENT_STATUS, Nation::ALL, m_byTrapNumber, pUser);
+		uint16 nTrapNumber = pUser->GetZoneID() == ZONE_KARUS ?  m_sSid - 20301 : m_sSid - 10301;
+		int16 nBonusNP = nTrapNumber == 0 ? 200 : 50;
 
-		if (pUser->GetNation() == KARUS && pUser->GetZoneID() == ELMORAD)
-		g_pMain->Announcement(DECLARE_WIN_MONUMENT_STATUS, Nation::ALL, m_byTrapNumber, pUser);
+		std::vector<Unit *> distributed_member;
+		std::vector<uint16> unitList;
+		g_pMain->GetUnitListFromSurroundingRegions(pUser, &unitList);
 
-		if (pUser->GetNation() == ELMORAD && pUser->GetZoneID() == ELMORAD)
-		g_pMain->Announcement(DECLARE_LOST_MONUMENT_STATUS, Nation::ALL, m_byTrapNumber, pUser);
+		foreach (itr, unitList)
+		{		
+			Unit * pTarget = g_pMain->GetUnitPtr(*itr);
 
-		if (pUser->GetNation() == ELMORAD && pUser->GetZoneID() == KARUS)
-		g_pMain->Announcement(DECLARE_WIN_MONUMENT_STATUS, Nation::ALL, m_byTrapNumber, pUser);
+			if(pTarget == nullptr || pTarget->isNPC())
+				continue; 
 
+			if (pTarget->GetNation() == pUser->GetNation() && pTarget->isInRangeSlow(pUser,RANGE_50M))
+				distributed_member.push_back(pTarget);
+		}
+
+		foreach (itr, distributed_member)
+		{
+			Unit * pTarget = *itr;
+
+			if(pTarget == nullptr || pTarget->isNPC())
+				continue;
+
+			// Daha Sonrasında Süre ile NP Verecek...
+			TO_USER(pTarget)->SendLoyaltyChange(nBonusNP);
+		}
+
+		g_pMain->Announcement(DECLARE_NATION_REWARD_STATUS, Nation::ALL, m_sSid, pUser);
 	}
 }

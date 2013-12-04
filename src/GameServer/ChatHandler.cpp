@@ -38,6 +38,7 @@ void CGameServerDlg::InitServerCommands()
 		{ "reload_tables",		&CGameServerDlg::HandleReloadTablesCommand,		"Reloads the in-game tables." },
 		{ "count",				&CGameServerDlg::HandleCountCommand,			"Get online user count." },
 		{ "permitconnect",		&CGameServerDlg::HandlePermitConnectCommand,	"Player unban" },
+		{ "warresult",			&CGameServerDlg::HandleWarResultCommand,		"Set result for War" },
 	};
 
 	init_command_table(CGameServerDlg, commandTable, s_commandTable);
@@ -73,6 +74,7 @@ void CUser::InitChatCommands()
 		{ "permitconnect",		&CUser::HandlePermitConnectCommand,				"Player unban" },
 		{ "tp_all",				&CUser::HandleTeleportAllCommand,				"Players send to home zone." },
 		{ "summonknights",		&CUser::HandleKnightsSummonCommand,				"Teleport the clan users. Arguments: clan name" },
+		{ "warresult",			&CUser::HandleWarResultCommand,					"Set result for War"},
 	};
 
 	init_command_table(CUser, commandTable, s_commandTable);
@@ -879,6 +881,26 @@ COMMAND_HANDLER(CGameServerDlg::HandlePermanentChatCommand)
 	return true;
 }
 
+COMMAND_HANDLER(CUser::HandleWarResultCommand) { return !isGM() ? false : g_pMain->HandleWarResultCommand(vargs, args, description); }
+COMMAND_HANDLER(CGameServerDlg::HandleWarResultCommand)
+{
+	// Char name
+	if (vargs.size() < 1)
+	{
+		// send description
+		printf("Using Sample : +warresult 1/2 (KARUS/HUMAN)\n");
+		return true;
+	}
+
+	uint8 winner_nation;
+	winner_nation = atoi(vargs.front().c_str());
+
+	if (winner_nation > 0 && winner_nation < 3)
+		BattleZoneResult(winner_nation);
+
+	return true;
+}
+
 void CGameServerDlg::SendHelpDescription(CUser *pUser, std::string sHelpMessage)
 {
 	if (pUser == nullptr || sHelpMessage == "")
@@ -971,6 +993,8 @@ COMMAND_HANDLER(CGameServerDlg::HandleReloadTablesCommand)
 	g_pMain->LoadQuestMonsterTable();
 	g_pMain->m_EventTriggerArray.DeleteAllData();
 	g_pMain->LoadEventTriggerTable();
+	g_pMain->m_ServerResourceArray.DeleteAllData();
+	g_pMain->LoadServerResourceTable();
 	return true;
 }
 
