@@ -2674,7 +2674,7 @@ void CGameServerDlg::CheckNationMonumentRewards()
 
 	foreach_stlmap_nolock (itr, m_NationMonumentInformationArray)
 	{
-		if (int32(UNIXTIME) - itr->second->RepawnedTime < 10)
+		if (int32(UNIXTIME) - itr->second->RepawnedTime < NATION_MONUMENT_REWARD_SECOND)
 			continue;
 
 		CNpc *pNpc = GetNpcPtr(itr->second->sNid);
