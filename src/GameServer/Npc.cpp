@@ -89,7 +89,8 @@ void CNpc::GetInOut(Packet & result, uint8 bType)
 	if (bType != INOUT_OUT)
 		GetNpcInfo(result);
 
-	OnRespawn();
+	if (bType == INOUT_IN)
+		OnRespawn();
 }
 
 /**
@@ -384,16 +385,16 @@ void CNpc::OnDeathProcess(Unit *pKiller)
 */
 void CNpc::OnRespawn()
 {
-	if (m_sSid == ELMORAD_MONUMENT_SID
+	if (g_pMain->m_byBattleOpen == NATION_BATTLE 
+		&& (m_sSid == ELMORAD_MONUMENT_SID
 		|| m_sSid == ASGA_VILLAGE_MONUMENT_SID
 		|| m_sSid == RAIBA_VILLAGE_MONUMENT_SID
 		|| m_sSid == DODO_CAMP_MONUMENT_SID
 		|| m_sSid == LUFERSON_MONUMENT_SID
 		|| m_sSid == LINATE_MONUMENT_SID
 		|| m_sSid == BELLUA_MONUMENT_SID
-		|| m_sSid == LAON_CAMP_MONUMENT_SID)
+		|| m_sSid == LAON_CAMP_MONUMENT_SID))
 	{
-
 		_MONUMENT_INFORMATION * pData = new	_MONUMENT_INFORMATION();
 		pData->sSid = m_sSid;
 		pData->sNid = m_sNid;

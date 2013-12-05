@@ -127,6 +127,7 @@ void CAISocket::RecvServerInfo(Packet & pkt)
 		g_pMain->m_sZoneCount = 0;
 		g_pMain->m_bFirstServerFlag = true;
 		g_pMain->m_bPointCheckFlag = true;
+		g_pMain->m_NationMonumentInformationArray.DeleteAllData();		
 
 		printf("All spawn data loaded.\n");
 	}

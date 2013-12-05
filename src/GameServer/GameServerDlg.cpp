@@ -2669,16 +2669,13 @@ void CGameServerDlg::CheckNationMonumentRewards()
 
 	foreach_stlmap_nolock (itr, g_pMain->m_NationMonumentInformationArray)
 	{
-		if (int32(UNIXTIME) - itr->second->RepawnedTime < NATION_MONUMENT_REWARD_SECOND)
+		if (int32(UNIXTIME) - itr->second->RepawnedTime < 20)
 			continue;
 
 		CNpc *pNpc = GetNpcPtr(itr->second->sNid);
 
 		if (pNpc == nullptr)
-		{
-			deleted.push_back(itr->second->sSid);
 			continue;
-		}
 
 		uint16 nTrapNumber = pNpc->GetZoneID() == ZONE_KARUS ?  itr->second->sSid - LUFERSON_MONUMENT_SID : itr->second->sSid - ELMORAD_MONUMENT_SID;
 
@@ -2708,6 +2705,7 @@ void CGameServerDlg::CheckNationMonumentRewards()
 		}
 
 		g_pMain->Announcement(DECLARE_NATION_REWARD_STATUS, Nation::ALL, itr->second->sSid, nullptr, pNpc);
+		deleted.push_back(itr->second->sSid);
 	}
 
 	foreach (itr, deleted)

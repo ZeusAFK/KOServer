@@ -122,7 +122,7 @@ void CKnightsManager::CreateKnights(CUser* pUser, Packet & pkt)
 		ret_value = 3;
 	else if (pUser->GetClanID() != 0)
 		ret_value = 5;
-	else if (g_pMain->m_nServerGroup != 1)
+	else if (g_pMain->m_nServerGroup == 2)
 		ret_value = 8;
 	else if (!pUser->GetMap()->canUpdateClan())
 		ret_value = 9;
