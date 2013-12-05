@@ -2650,6 +2650,11 @@ std::string CGameServerDlg::GetBattleAndNationMonumentName(int16 TrapNumber, uin
 	}
 	else
 	{
+		if (ZoneID == ZONE_KARUS && TrapNumber == 1)
+			TrapNumber = 2;
+		else if (ZoneID == ZONE_KARUS && TrapNumber == 2)
+			TrapNumber = 1;
+
 		if (TrapNumber == 0)
 			sMonumentName = string_format("%s Monument", ZoneID == ZONE_KARUS ? "Luferson" : "El Morad");
 		else if (TrapNumber == 1)
@@ -2667,9 +2672,9 @@ void CGameServerDlg::CheckNationMonumentRewards()
 {
 	std::vector<uint16> deleted;
 
-	foreach_stlmap_nolock (itr, g_pMain->m_NationMonumentInformationArray)
+	foreach_stlmap_nolock (itr, m_NationMonumentInformationArray)
 	{
-		if (int32(UNIXTIME) - itr->second->RepawnedTime < 20)
+		if (int32(UNIXTIME) - itr->second->RepawnedTime < 10)
 			continue;
 
 		CNpc *pNpc = GetNpcPtr(itr->second->sNid);
@@ -2704,10 +2709,18 @@ void CGameServerDlg::CheckNationMonumentRewards()
 			TO_USER(pTarget)->SendLoyaltyChange(nTrapNumber == 0 ? 200 : 50);
 		}
 
-		g_pMain->Announcement(DECLARE_NATION_REWARD_STATUS, Nation::ALL, itr->second->sSid, nullptr, pNpc);
+		Announcement(DECLARE_NATION_REWARD_STATUS, Nation::ALL, itr->second->sSid, nullptr, pNpc);
+		ShowNpcEffect(itr->second->sNid,20100,pNpc->GetZoneID());
 		deleted.push_back(itr->second->sSid);
 	}
 
 	foreach (itr, deleted)
 		g_pMain->m_NationMonumentInformationArray.DeleteData(*itr);
+}
+
+void CGameServerDlg::ShowNpcEffect(uint16 sNpcID, uint32 nEffectID, uint8 ZoneID)
+{
+	Packet result(WIZ_OBJECT_EVENT, uint8(OBJECT_NPC));
+	result << uint8(3) << sNpcID << nEffectID;
+	g_pMain->Send_Zone(&result, ZoneID);
 }

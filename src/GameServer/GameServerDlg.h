@@ -300,6 +300,9 @@ public:
 	// Removes the account name & character names from the hashmaps (on logout)
 	void RemoveSessionNames(CUser *pSession);
 
+	// Send to Zone NPC Effect
+	void ShowNpcEffect(uint16 sNpcID, uint32 nEffectID, uint8 ZoneID);
+
 	_PARTY_GROUP * GetPartyPtr(uint16 sPartyID);
 	CKnights * GetClanPtr(uint16 sClanID);
 	_KNIGHTS_ALLIANCE * GetAlliancePtr(uint16 sAllianceID);

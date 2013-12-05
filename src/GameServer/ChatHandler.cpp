@@ -884,11 +884,18 @@ COMMAND_HANDLER(CGameServerDlg::HandlePermanentChatCommand)
 COMMAND_HANDLER(CUser::HandleWarResultCommand) { return !isGM() ? false : g_pMain->HandleWarResultCommand(vargs, args, description); }
 COMMAND_HANDLER(CGameServerDlg::HandleWarResultCommand)
 {
-	// Char name
+	// Nation number
 	if (vargs.size() < 1)
 	{
 		// send description
 		printf("Using Sample : +warresult 1/2 (KARUS/HUMAN)\n");
+		return true;
+	}
+
+	if (m_byBattleOpen == NO_BATTLE)
+	{
+		// send description
+		printf("Warning : Battle is not open.\n");
 		return true;
 	}
 

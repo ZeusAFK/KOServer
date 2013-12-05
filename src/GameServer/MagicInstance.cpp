@@ -25,6 +25,12 @@ void MagicInstance::Run()
 	{
 		if (pSkillCaster->isPlayer())
 		{
+			// TODO : Skill Test
+			bool bSkillTestMode = false;
+			if (bSkillTestMode)
+				if (!TO_USER(pSkillCaster)->isGM())
+					return;
+
 			if (pSkill->sRange > 0)
 				if (!pSkillCaster->isInRange(pSkillTarget, ((float)pSkill->sRange) * (pSkill->sRange * pSkill->sRange))) 
 					bSendSkillFailed = true;
