@@ -102,7 +102,7 @@ template <class T>
 void KOSocketMgr<T>::InitSessions(uint16 sTotalSessions)
 {
 	m_lock.AcquireWriteLock();
-	for (uint16 i = 0; i < (sTotalSessions & 0x0BB8) + 1; i++)
+	for (uint16 i = 0; i < (sTotalSessions & MAX_USER) + 1; i++)
 		m_idleSessions.insert(std::make_pair(i, new T(i, this)));
 	m_lock.ReleaseWriteLock();
 }
