@@ -3752,10 +3752,10 @@ void CUser::GoldChange(short tid, int gold)
 		// Otherwise, if we're in a party, we need to divide it up.
 		_PARTY_GROUP* pParty = g_pMain->GetPartyPtr(GetPartyID());
 		if (pParty == nullptr)
-			return;			
+			return;
 
-		int userCount = 0, levelSum = 0, temp_gold = (pTUser->m_iGold * 4) / 10;	
-		pTUser->GoldLose(pTUser->m_iGold / 2);		
+		int userCount = 0, levelSum = 0, temp_gold = (pTUser->m_iGold * 4) / 10;
+		pTUser->GoldLose(pTUser->m_iGold / 2);
 
 		// TODO: Clean up the party system. 
 		for (int i = 0; i < MAX_PARTY_USERS; i++)
@@ -4402,7 +4402,7 @@ void CUser::OnDeath(Unit *pKiller)
 								pUser->LoyaltyDivide(GetID(), bonusNP);
 
 								_PARTY_GROUP * pParty = g_pMain->GetPartyPtr(GetPartyID());
-								if (pParty) 
+								if (pParty)
 								{
 									for (uint8 i = 0; i < MAX_PARTY_USERS; i++)
 									{

@@ -680,7 +680,7 @@ uint32 CGameServerDlg::Timer_ReloadUserAndKnightsRating(void * lpParam)
 {
 	while (g_bRunning)
 	{
-		g_DBAgent.UpdateServer();
+		g_DBAgent.UpdateRanks();
 
 		// Update clan grades/rankings
 		g_pMain->m_KnightsArray.DeleteAllData();
