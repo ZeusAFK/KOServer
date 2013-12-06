@@ -1795,3 +1795,13 @@ void CDBAgent::UpdateUserDailyOp(std::string strUserId, uint8 type, int32 sUnixT
 	if (!dbCommand->Execute(string_format(_T("{CALL UPDATE_USER_DAILY_OP(?, %d, %d)}"), type, sUnixTime)))
 		ReportSQLError(m_GameDB->GetError());	
 }
+
+void CDBAgent::UpdateServer()
+{
+	unique_ptr<OdbcCommand> dbCommand(m_GameDB->CreateCommand());
+	if (dbCommand.get() == nullptr)
+		return;
+
+	if (!dbCommand->Execute(_T("{CALL UPDATE_SERVER}")))
+		ReportSQLError(m_GameDB->GetError());
+}
