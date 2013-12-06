@@ -1669,7 +1669,13 @@ void CGameServerDlg::BattleZoneOpenTimer()
 		m_byBattleRemainingTime = m_byBattleTime - WarElapsedTime;
 		uint8 nBattleZone = g_pMain->m_byBattleZone + ZONE_BATTLE_BASE;
 
-		if (m_bVictory == 0 && WarElapsedTime >= ((m_byBattleTime / 2) + ((m_byBattleTime / 2) / 4)) && WarElapsedTime < m_byBattleTime) // War half time + 15 minutes for Nereid's Island.
+		if (m_bVictory == 0 && WarElapsedTime == 300 && WarElapsedTime < m_byBattleTime) // War half time + 15 minutes for Nereid's Island.
+		{
+			m_KnightsRatingArray[KARUS_ARRAY].DeleteAllData();
+			m_KnightsRatingArray[ELMORAD_ARRAY].DeleteAllData();
+			LoadKnightsRankTable(true);
+		}
+		else if (m_bVictory == 0 && WarElapsedTime >= ((m_byBattleTime / 2) + ((m_byBattleTime / 2) / 4)) && WarElapsedTime < m_byBattleTime) // War half time + 15 minutes for Nereid's Island.
 		{
 			if (nBattleZone == ZONE_BATTLE4) // Nereid's Island
 			{
