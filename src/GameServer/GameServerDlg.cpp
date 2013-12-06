@@ -2336,14 +2336,14 @@ void CGameServerDlg::Announcement(uint16 type, int nation, int chat_type, CUser*
 		if (pExceptUser)
 		{
 			CKnights *pKnights = g_pMain->GetClanPtr(pExceptUser->GetClanID());
-			GetServerResource(IDS_KARUS_CAPTAIN_DEPRIVE, &chatstr, pKnights == nullptr ? "***" : pKnights->GetName(), pExceptUser->GetName().c_str());
+			GetServerResource(IDS_KARUS_CAPTAIN_DEPRIVE, &chatstr, pKnights == nullptr ? "***" : pKnights->GetName().c_str(), pExceptUser->GetName().c_str());
 		}
 		break;
 	case ELMORAD_CAPTAIN_DEPRIVE_NOTIFY:
 		if (pExceptUser)
 		{
 			CKnights *pKnights = g_pMain->GetClanPtr(pExceptUser->GetClanID());
-			GetServerResource(IDS_ELMO_CAPTAIN_DEPRIVE, &chatstr, pKnights == nullptr ? "***" : pKnights->GetName(),  pExceptUser->GetName().c_str());
+			GetServerResource(IDS_ELMO_CAPTAIN_DEPRIVE, &chatstr, pKnights == nullptr ? "***" : pKnights->GetName().c_str(),  pExceptUser->GetName().c_str());
 		}
 		break;
 	}
