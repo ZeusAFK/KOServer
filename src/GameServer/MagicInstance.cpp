@@ -520,9 +520,9 @@ bool MagicInstance::CheckType6Prerequisites()
 		// used for showing the transformation list & UseItem is the consumable item.
 	case TransformationSkillUseMonster:
 		// Ensure they have the item for showing the transformation list
-		if (!pCaster->CanUseItem(pSkill->nBeforeAction)
+		if ((!pCaster->CanUseItem(pSkill->nBeforeAction)
 			// Ensure they have the required item for the skill.
-				|| !pCaster->CanUseItem(pSkill->iUseItem))
+				|| !pCaster->CanUseItem(pSkill->iUseItem)) && !pCaster->CheckExistItem(381001000))
 				return false;
 
 		break;
@@ -851,6 +851,11 @@ bool MagicInstance::IsAvailable()
 		case 6:
 			if (!CheckType6Prerequisites())
 				return false;
+			else
+			{
+				if (TO_USER(pSkillCaster)->CheckExistItem(381001000))
+					TO_USER(pSkillCaster)->RobItem(381001000);
+			}
 			break;
 		}
 	}
