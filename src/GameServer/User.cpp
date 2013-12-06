@@ -485,7 +485,7 @@ void CUser::Update()
 		UserDataSaveToAgent();
 	}
 
-	if (m_bResHpType == USER_SITDOWN && (UNIXTIME - m_lastBonusTime) >= g_pMain->m_nBonusTimeInterval)
+	if (m_bResHpType == USER_SITDOWN && g_pMain->m_nBonusTimeInterval > 0 && (UNIXTIME - m_lastBonusTime) >= g_pMain->m_nBonusTimeInterval)
 	{
 		m_lastBonusTime = UNIXTIME; 
 
@@ -617,7 +617,7 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 
 		if (bIsKillReward)
 		{
-			if (isInPKZone() || GetMap()->isWarZone())
+			if (g_pMain->m_nBonusPVPWarExp > 0 && (isInPKZone() || GetMap()->isWarZone()))
 				ExpChange(g_pMain->m_nBonusPVPWarExp, true);
 
 			if (m_bPremiumType != 0)
