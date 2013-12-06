@@ -310,6 +310,7 @@ struct	_PARTY_GROUP
 struct _BUFF_TYPE4_INFO
 {
 	uint32	m_nSkillID;
+	uint8	m_bBuffType;
 	bool	m_bIsBuff; // Is it a buff or a debuff?
 	bool	m_bDurationExtended;
 	time_t	m_tEndTime;
@@ -318,7 +319,7 @@ struct _BUFF_TYPE4_INFO
 	INLINE bool isDebuff() { return !m_bIsBuff; }
 
 	_BUFF_TYPE4_INFO() 
-		: m_nSkillID(0), m_bIsBuff(false), m_bDurationExtended(false), m_tEndTime(0)
+		: m_nSkillID(0), m_bBuffType(0), m_bIsBuff(false), m_bDurationExtended(false), m_tEndTime(0)
 	{
 	}
 };

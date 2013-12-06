@@ -1499,7 +1499,6 @@ bool MagicInstance::ExecuteType3()
 bool MagicInstance::ExecuteType4()
 {
 	int damage = 0;
-
 	vector<Unit *> casted_member;
 	if (pSkill == nullptr)
 		return false;
@@ -1604,6 +1603,7 @@ bool MagicInstance::ExecuteType4()
 		// NOTE:	Buffs will already be cast on a user when trying to recast. 
 		//			We should not error out in this case.
 		bool bSkillTypeAlreadyOnTarget = (!bIsRecastingSavedMagic && buffItr != pTarget->m_buffMap.end());
+		bool bLockSavedMagic = false;
 
 		pTarget->m_buffLock.Release();
 
@@ -1612,7 +1612,16 @@ bool MagicInstance::ExecuteType4()
 		// rather than just stacking the modifiers, as the client only supports one (de)buff of that type active.
 		if (bSkillTypeAlreadyOnTarget && pType->isDebuff())
 		{
-			CMagicProcess::RemoveType4Buff(pType->bBuffType, pTarget);
+			foreach (itr, pTarget->m_buffMap)
+			{
+				if (itr->second.isBuff() && pType->bBuffType == itr->second.m_bBuffType && itr->second.m_nSkillID > 500000)
+				{
+					bLockSavedMagic = true;
+					break;
+				}
+			}
+
+			CMagicProcess::RemoveType4Buff(pType->bBuffType, pTarget, bLockSavedMagic ? false : true);
 			bSkillTypeAlreadyOnTarget = false;
 		}
 
@@ -1662,6 +1671,7 @@ bool MagicInstance::ExecuteType4()
 		if (!bSkillTypeAlreadyOnTarget)
 		{
 			pBuffInfo.m_nSkillID = nSkillID;
+			pBuffInfo.m_bBuffType = pType->bBuffType;
 			pBuffInfo.m_bIsBuff = pType->bIsBuff;
 
 			pBuffInfo.m_bDurationExtended = false;
@@ -1676,9 +1686,6 @@ bool MagicInstance::ExecuteType4()
 		{
 			TO_USER(pTarget)->SetUserAbility();
 			TO_USER(pTarget)->Send2AI_UserUpdateInfo();
-
-			if (pType->bBuffType == BUFF_TYPE_HP_MP)
-				pTarget->HpChange(pTarget->GetMaxHealth());
 		}
 
 fail_return:
@@ -1823,14 +1830,25 @@ bool MagicInstance::ExecuteType5()
 
 		case REMOVE_TYPE4: // Remove type 4 debuffs
 			{
-				bool bRecastSavedMagic = false;
 				FastGuard lock(pTUser->m_buffLock);
 				Type4BuffMap buffMap = pTUser->m_buffMap; // copy the map so we can't break it while looping
+				bool bRecastSavedMagic = false;
 
 				foreach (itr, buffMap)
 				{
 					if (itr->second.isDebuff())
+					{
+						if (itr->second.m_bBuffType == BUFF_TYPE_HP_MP || itr->second.m_bBuffType == BUFF_TYPE_AC)
+							bRecastSavedMagic = true;
+
 						CMagicProcess::RemoveType4Buff(itr->first, pTUser);
+					}
+				}
+
+				if (bRecastSavedMagic)
+				{
+					pTUser->InitType4();
+					pTUser->RecastSavedMagic(false);
 				}
 
 				// NOTE: This originally checked to see if there were any active debuffs.
