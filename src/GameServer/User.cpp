@@ -2893,9 +2893,6 @@ void CUser::LoyaltyDivide(int16 tid, uint16 bonusNP /*= 0*/)
 	else 
 		return;
 
-	if (m_bZone != m_bNation && m_bZone < 3)
-		loyalty_source = 2 * loyalty_source;
-
 	// Adds bonus NP to be divided up & rewarded to the entire party.
 	// e.g. in the case of rival kills (should it share this particular bonus though?)
 	loyalty_source += bonusNP;
