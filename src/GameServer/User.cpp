@@ -4267,8 +4267,6 @@ void CUser::OnDeath(Unit *pKiller)
 
 	if (GetFame() == COMMAND_CAPTAIN)
 	{
-		ChangeFame(CHIEF);
-
 		if (GetNation() == KARUS)
 			g_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS, 8, this);
 		else
