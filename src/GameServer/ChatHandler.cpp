@@ -985,9 +985,6 @@ COMMAND_HANDLER(CGameServerDlg::HandleReloadTablesCommand)
 	g_pMain->LoadMagicType7();
 	g_pMain->LoadMagicType8();
 	g_pMain->LoadMagicType9();
-	g_pMain->m_UserPersonalRankMap.clear();
-	g_pMain->m_UserKnightsRankMap.clear();
-	g_pMain->LoadUserRankings();
 	g_pMain->m_StartPositionArray.DeleteAllData();
 	g_pMain->LoadStartPositionTable();
 	g_pMain->m_ItemExchangeArray.DeleteAllData();
@@ -1002,6 +999,17 @@ COMMAND_HANDLER(CGameServerDlg::HandleReloadTablesCommand)
 	g_pMain->LoadEventTriggerTable();
 	g_pMain->m_ServerResourceArray.DeleteAllData();
 	g_pMain->LoadServerResourceTable();
+	g_pMain->m_KnightsArray.DeleteAllData();
+	g_pMain->m_KnightsAllianceArray.DeleteAllData();
+	g_pMain->m_KnightsAllianceArray.DeleteAllData();
+	g_pMain->m_KnightsRatingArray[KARUS_ARRAY].DeleteAllData();
+	g_pMain->m_KnightsRatingArray[ELMORAD_ARRAY].DeleteAllData();
+	g_pMain->LoadAllKnights();
+	g_pMain->LoadAllKnightsUserData();
+	g_pMain->LoadKnightsAllianceTable();
+	g_pMain->LoadKnightsRankTable();
+	g_pMain->CleanupUserRankings();
+	g_pMain->LoadUserRankings();
 	return true;
 }
 

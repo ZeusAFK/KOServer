@@ -2590,6 +2590,9 @@ int32 MagicInstance::GetWeatherDamage(int32 damage, int attribute)
 
 void MagicInstance::Type6Cancel(bool bForceRemoval /*= false*/)
 {
+	if (g_pMain->m_Magictype6Array.GetData(nSkillID) == nullptr)
+		return;
+
 	// NPCs cannot transform.
 	if (!pSkillCaster->isPlayer()
 		// Are we transformed? Note: if we're relogging, and we need to remove it, we should ignore this check.
