@@ -677,10 +677,18 @@ uint32 CGameServerDlg::Timer_ReloadUserAndKnightsRating(void * lpParam)
 	while (g_bRunning)
 	{
 		// Update clan grades/rankings
-		Packet result(WIZ_KNIGHTS_PROCESS, uint8(KNIGHTS_ALLLIST_REQ));
-		g_pMain->AddDatabaseRequest(result);
+		g_pMain->m_KnightsArray.DeleteAllData();
+		g_pMain->m_KnightsAllianceArray.DeleteAllData();
+		g_pMain->m_KnightsAllianceArray.DeleteAllData();
+		g_pMain->m_KnightsRatingArray[KARUS_ARRAY].DeleteAllData();
+		g_pMain->m_KnightsRatingArray[ELMORAD_ARRAY].DeleteAllData();
+		g_pMain->LoadAllKnights();
+		g_pMain->LoadAllKnightsUserData();
+		g_pMain->LoadKnightsAllianceTable();
+		g_pMain->LoadKnightsRankTable();
 
 		// Update user rankings
+		g_pMain->CleanupUserRankings();
 		g_pMain->LoadUserRankings();
 
 		sleep(RELOAD_KNIGHTS_AND_USER_RATING * MINUTE);
