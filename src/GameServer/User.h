@@ -144,6 +144,7 @@ public:
 	uint8	m_bLogout;
 	uint32	m_dwTime;
 	time_t	m_lastSaveTime;
+	time_t	m_lastBonusTime;
 
 	uint8	m_bAccountStatus;
 	uint8	m_bPremiumType;
@@ -560,7 +561,7 @@ public:
 
 	void SetRival(CUser * pRival);
 	void RemoveRival();
-	void SendLoyaltyChange(int32 nChangeAmount = 0, bool bIsKillReward = false);
+	void SendLoyaltyChange(int32 nChangeAmount = 0, bool bIsKillReward = false, bool bIsBonusTime = false);
 
 	void NativeZoneReturn();
 	void KickOutZoneUser(bool home = false, uint8 nZoneID = 21);
@@ -894,7 +895,7 @@ public:
 	void SetMaxMp();
 	void SetMaxHp(int iFlag = 0);
 	void RecvUserExp(Packet & pkt);
-	void ExpChange(int64 iExp);
+	void ExpChange(int64 iExp, bool bIsBonusReward = false);
 	void LogOut();
 	void SendMyInfo();
 	void SendServerChange(std::string & ip, uint8 bInit);

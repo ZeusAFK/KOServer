@@ -405,6 +405,7 @@ bool CDBAgent::LoadUserData(string & strAccountID, string & strCharID, CUser *pU
 
 	pUser->m_strUserID = strCharID;
 	pUser->m_lastSaveTime = UNIXTIME;
+	pUser->m_lastBonusTime = UNIXTIME;
 
 	// Convert the old quest storage format to the new one.
 	pUser->m_questMap.clear();
@@ -965,6 +966,7 @@ bool CDBAgent::UpdateUser(string & strCharID, UserUpdateType type, CUser *pUser)
 	}
 
 	pUser->m_lastSaveTime = UNIXTIME;
+	pUser->m_lastBonusTime = UNIXTIME;
 	return true;
 }
 

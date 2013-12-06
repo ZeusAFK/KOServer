@@ -484,6 +484,24 @@ void CUser::Update()
 		m_lastSaveTime = UNIXTIME; // this is set by UpdateUser(), however it may result in multiple requests unless it's set first.
 		UserDataSaveToAgent();
 	}
+
+	if (m_bResHpType == USER_SITDOWN && (UNIXTIME - m_lastBonusTime) >= g_pMain->m_nBonusTimeInterval)
+	{
+		m_lastBonusTime = UNIXTIME; 
+
+		if (!isDead() 
+			&& !isMining()
+			&& !isTrading() 
+			&& !isMerchanting())
+		{
+			ExpChange(GetLevel() * 120, true);
+			if ((isInPKZone() || GetZoneID() == ZONE_MORADON) && g_pMain->m_nBonusTimeLoyalty > 0)
+				SendLoyaltyChange(g_pMain->m_nBonusTimeLoyalty, false, true);
+		}
+	}
+	else if (m_bResHpType == USER_STANDING)
+		m_lastBonusTime = UNIXTIME; 
+
 }
 
 void CUser::SetRival(CUser * pRival)
@@ -537,7 +555,7 @@ void CUser::RemoveRival()
 * @param	bIsKillReward	When set to true, enables the use of NP-modifying buffs
 *							and includes monthly NP gains.
 */
-void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*= false*/)
+void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*= false*/, bool bIsBonusReward)
 {
 	Packet result(WIZ_LOYALTY_CHANGE, uint8(LOYALTY_NATIONAL_POINTS));
 	uint32 nClanLoyaltyAmount = 0;
@@ -589,13 +607,19 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 			UpdatePlayerRank();
 		}
 		//// We should only apply additional monthly NP when NP was gained as a reward for killing a player.
-		if (m_iLoyaltyMonthly + nChangeAmount > LOYALTY_MAX)
-			m_iLoyaltyMonthly = LOYALTY_MAX;
-		else
-			m_iLoyaltyMonthly += nChangeAmount;
+		if (!bIsBonusReward)
+		{
+			if (m_iLoyaltyMonthly + nChangeAmount > LOYALTY_MAX)
+				m_iLoyaltyMonthly = LOYALTY_MAX;
+			else
+				m_iLoyaltyMonthly += nChangeAmount;
+		}
 
 		if (bIsKillReward)
 		{
+			if (isInPKZone() || GetMap()->isWarZone())
+				ExpChange(g_pMain->m_nBonusPVPWarExp, true);
+
 			if (m_bPremiumType != 0)
 			{
 				m_iLoyalty += GetPremiumProperty(PremiumBonusLoyalty);
@@ -606,7 +630,7 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 			}
 		}
 
-		if (m_bKnights != 0)
+		if (m_bKnights != 0 && !bIsBonusReward)
 		{
 			CKnights * pKnights = g_pMain->GetClanPtr(GetClanID());
 
@@ -1479,7 +1503,7 @@ void CUser::RecvUserExp(Packet & pkt)
 *
 * @param	iExp	The amount of experience points to adjust by.
 */
-void CUser::ExpChange(int64 iExp)
+void CUser::ExpChange(int64 iExp, bool bIsBonusReward)
 {	
 	// Stop players level 5 or under from losing XP on death.
 	if ((GetLevel() < 6 && iExp < 0)
@@ -1493,15 +1517,18 @@ void CUser::ExpChange(int64 iExp)
 
 	if (iExp > 0)
 	{
-		// Adjust the exp gained based on the percent set by the buff
-		iExp = iExp * (m_sExpGainAmount + m_bItemExpGainAmount) / 100;
+		if (!bIsBonusReward)
+		{
+			// Adjust the exp gained based on the percent set by the buff
+			iExp = iExp * (m_sExpGainAmount + m_bItemExpGainAmount) / 100;
 
-		// Add on any additional XP earned because of a global XP event.
-		// NOTE: They officially check to see if the XP is <= 100,000.
-		iExp = iExp * (100 + g_pMain->m_byExpEventAmount) / 100;
+			// Add on any additional XP earned because of a global XP event.
+			// NOTE: They officially check to see if the XP is <= 100,000.
+			iExp = iExp * (100 + g_pMain->m_byExpEventAmount) / 100;
 
-		if (m_bPremiumType != 0)
-			iExp = iExp * (100 + GetPremiumProperty(PremiumExpPercent)) / 100;
+			if (m_bPremiumType != 0)
+				iExp = iExp * (100 + GetPremiumProperty(PremiumExpPercent)) / 100;
+		}
 	}
 
 	bool bLevel = true;
