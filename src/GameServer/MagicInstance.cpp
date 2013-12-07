@@ -1306,8 +1306,10 @@ bool MagicInstance::ExecuteType3()
 			{
 				// Affects target's HP
 			case 1:
+				// Disable to heal or minor NPC.
 				if ((pTarget->isNPC() && pType->sTimeDamage > 0) || (pTarget->isNPC() && pType->sFirstDamage > 0))
 					return false;
+
 				// "Critical Point" buff gives a chance to double HP from pots or the rogue skill "Minor heal".
 				if (damage > 0 && pSkillCaster->hasBuff(BUFF_TYPE_DAMAGE_DOUBLE)
 					&& CheckPercent(500))

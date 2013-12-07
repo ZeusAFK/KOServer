@@ -113,20 +113,13 @@ public:
 
 		// Check the buff counter.
 		// We cannot check the map itself, as the map contains both buffs and debuffs.
-
 		if (bIsOnlyScroll)
 		{
-			Type4BuffMap buffMap = m_buffMap; 
-			uint8 nBuffCount = 0;
-
-			foreach (itr, buffMap)
+			foreach (itr, m_buffMap)
 				if (itr->second.m_nSkillID > 500000)
-					nBuffCount++;
-
-			return nBuffCount > 0;
+					return true;
 		}
-		else
-			return m_buffCount > 0;
+		return m_buffCount > 0;
 	}
 
 	INLINE bool isDebuffed()
