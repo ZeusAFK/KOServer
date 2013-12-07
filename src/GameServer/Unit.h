@@ -107,13 +107,26 @@ public:
 	INLINE bool canTeleport() { return m_bCanTeleport; }
 	INLINE bool isKaul() { return m_bIsKaul; }
 
-	INLINE bool isBuffed()
+	INLINE bool isBuffed(bool bIsOnlyScroll = false)
 	{
 		FastGuard lock(m_buffLock);
 
 		// Check the buff counter.
 		// We cannot check the map itself, as the map contains both buffs and debuffs.
-		return m_buffCount > 0;
+
+		if (bIsOnlyScroll)
+		{
+			Type4BuffMap buffMap = m_buffMap; 
+			uint8 nBuffCount = 0;
+
+			foreach (itr, buffMap)
+				if (itr->second.m_nSkillID > 500000)
+					nBuffCount++;
+
+			return nBuffCount > 0;
+		}
+		else
+			return m_buffCount > 0;
 	}
 
 	INLINE bool isDebuffed()

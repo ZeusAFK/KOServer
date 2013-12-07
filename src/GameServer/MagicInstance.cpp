@@ -1918,7 +1918,7 @@ bool MagicInstance::ExecuteType6()
 			&& pSkillCaster->GetZoneID() > ELMORAD)
 			|| (!bIsRecastingSavedMagic && pCaster->isTransformed())
 			// All buffs must be removed before using transformation skills
-			|| (pType->bUserSkillUse != TransformationSkillUseNPC && pSkillCaster->isBuffed())
+			|| (pType->bUserSkillUse != TransformationSkillUseNPC && pSkillCaster->isBuffed(true))
 			// Transformation nation.
 			|| (pType->bNation != 0 && pType->bNation != pCaster->GetNation()))
 	{
