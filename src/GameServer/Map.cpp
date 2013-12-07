@@ -109,7 +109,7 @@ bool C3DMap::CheckEvent(float x, float z, CUser* pUser)
 	int event_index = m_smdFile->GetEventID((int)(x / m_smdFile->GetUnitDistance()), (int)(z / m_smdFile->GetUnitDistance()));
 	if (event_index < 2)
 	{
-		if (g_pMain->m_byBattleOpen == NATION_BATTLE && pUser->GetMap()->isWarZone())
+		if (g_pMain->m_byBattleOpen == NATION_BATTLE && pUser->GetMap()->isWarZone() && g_pMain->m_byBattleZoneType == 0)
 		{
 			pEvent = m_EventArray.GetData(1010 + (pUser->GetNation() == ELMORAD ? 1 : 2));
 
@@ -155,6 +155,9 @@ bool C3DMap::CheckEvent(float x, float z, CUser* pUser)
 			TRACE("%s cannot enter war zone %d, too many users.\n", pUser->GetName().c_str(), pEvent->m_iExec[0]);
 			return false;
 		}
+
+		if (g_pMain->m_byBattleZoneType == ZONE_ARDREAM && pUser->GetLevel() < MIN_LEVEL_NIEDS_TRIANGLE && !pUser->CanLevelQualify(MAX_LEVEL_NIEDS_TRIANGLE))
+			return false;
 	}
 
 	pEvent->RunEvent(pUser);
