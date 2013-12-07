@@ -999,6 +999,10 @@ COMMAND_HANDLER(CGameServerDlg::HandleReloadTablesCommand)
 	g_pMain->LoadEventTriggerTable();
 	g_pMain->m_ServerResourceArray.DeleteAllData();
 	g_pMain->LoadServerResourceTable();
+	g_pMain->m_MonsterRespawnListArray.DeleteAllData();
+	g_pMain->LoadMonsterRespawnListTable();
+	g_pMain->m_MonsterRespawnListInformationArray.DeleteAllData();
+	g_pMain->LoadMonsterRespawnListInformationTable();
 	g_pMain->m_KnightsArray.DeleteAllData();
 	g_pMain->m_KnightsAllianceArray.DeleteAllData();
 	g_pMain->m_KnightsAllianceArray.DeleteAllData();

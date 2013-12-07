@@ -15,7 +15,7 @@ public:
 
 		_dbCommand->FetchUInt16(1, pData->sIndex);
 		_dbCommand->FetchUInt16(2, pData->sSid);
-		_dbCommand->FetchByte(3, pData->sCount);
+		_dbCommand->FetchUInt16(3, pData->sCount);
 
 		if (!m_pMap->PutData(pData->sIndex, pData))
 			delete pData;

@@ -362,6 +362,9 @@
     <ClInclude Include="..\shared\database\EventTriggerSet.h">
       <Filter>Database</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\database\MonsterRespawnListInformationSet.h">
+      <Filter>Database</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\GameServer.ico">

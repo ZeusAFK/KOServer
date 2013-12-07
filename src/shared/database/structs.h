@@ -270,18 +270,19 @@ struct _MONSTER_RESPAWN_LIST
 {
 	uint16	sIndex;
 	uint16	sSid;
-	uint8	sCount;
+	uint16	sCount;
 };
 
-struct _MONSTER_RESPAWN_INFORMATION
+struct _MONSTER_RESPAWN_LIST_INFORMATION
 {
 	uint16 sIndex;
 	uint16 sSid;
 	uint8 ZoneID;
-	bool IsMonster;
-	float fX;
-	float fZ;
-	float fY;
+	uint16 X;
+	uint16 Y;
+	uint16 Z;
+	uint16	sCount;
+	uint8 bRadius;
 };
 
 #define MAX_PARTY_USERS		8

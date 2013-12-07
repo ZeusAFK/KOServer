@@ -62,6 +62,7 @@ public:
 	bool LoadMonsterSummonListTable();
 	bool LoadMonsterSummonListZoneTable();
 	bool LoadMonsterRespawnListTable();
+	bool LoadMonsterRespawnListInformationTable();
 	bool LoadPremiumItemTable();
 	bool LoadPremiumItemExpTable();
 	bool LoadUserDailyOpTable();
@@ -357,6 +358,7 @@ public:
 	MonsterSummonListArray		m_MonsterSummonList;
 	MonsterSummonListZoneArray	m_MonsterSummonListZoneArray;
 	MonsterRespawnListArray		m_MonsterRespawnListArray;
+	MonsterRespawnListInformationArray	m_MonsterRespawnListInformationArray;
 	PremiumItemArray			m_PremiumItemArray;
 	PremiumItemExpArray			m_PremiumItemExpArray;
 	UserRankingArray			m_UserRankingArray[2];

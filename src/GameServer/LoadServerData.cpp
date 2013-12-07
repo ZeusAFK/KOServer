@@ -47,6 +47,7 @@
 #include "../shared/database/MonsterSummonListSet.h"
 #include "../shared/database/MonsterSummonListZoneSet.h"
 #include "../shared/database/MonsterRespawnListSet.h"
+#include "../shared/database/MonsterRespawnListInformationSet.h"
 #include "../shared/database/PremiumItemSet.h"
 #include "../shared/database/PremiumItemExpSet.h"
 #include "../shared/database/UserDailyOpSet.h"
@@ -317,6 +318,11 @@ bool CGameServerDlg::LoadMonsterSummonListZoneTable()
 bool CGameServerDlg::LoadMonsterRespawnListTable()
 {
 	LOAD_TABLE(CMonsterRespawnListSet, g_DBAgent.m_GameDB, &m_MonsterRespawnListArray, true);
+}
+
+bool CGameServerDlg::LoadMonsterRespawnListInformationTable()
+{
+	LOAD_TABLE(CMonsterRespawnListInformationSet, g_DBAgent.m_GameDB, &m_MonsterRespawnListInformationArray, true);
 }
 
 bool CGameServerDlg::LoadPremiumItemTable()

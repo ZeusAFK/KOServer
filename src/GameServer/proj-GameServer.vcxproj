@@ -404,6 +404,7 @@
     <ClInclude Include="..\shared\database\MagicType7Set.h" />
     <ClInclude Include="..\shared\database\MagicType8Set.h" />
     <ClInclude Include="..\shared\database\MagicType9Set.h" />
+    <ClInclude Include="..\shared\database\MonsterRespawnListInformationSet.h" />
     <ClInclude Include="..\shared\database\MonsterRespawnListSet.h" />
     <ClInclude Include="..\shared\database\MonsterSummonListZoneSet.h" />
     <ClInclude Include="..\shared\database\MonsterSummonListSet.h" />

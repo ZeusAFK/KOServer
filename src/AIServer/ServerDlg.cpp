@@ -246,23 +246,6 @@ bool CServerDlg::LoadSpawnCallback(OdbcCommand *dbCommand)
 	uint8 bPathSerial = 1;
 	for (uint8 j = 0; j < bNumNpc; j++)
 	{
-		if (bActType == 10)
-		{
-			_MONSTER_RESPAWN_INFORMATION *pData = new _MONSTER_RESPAWN_INFORMATION();
-			pData->sIndex = m_MonsterRespawnInformationArray.GetSize();
-			pData->sSid = sSid;
-			pData->ZoneID = bZoneID;
-			pData->IsMonster = true;
-			pData->fX = (float)iLeftX;
-			pData->fZ =(float)iTopZ;
-			pData->fX = (float)iRightX;
-
-			if (!m_MonsterRespawnInformationArray.PutData(pData->sIndex,pData))
-				delete pData;
-
-			continue;
-		}
-
 		CNpc * pNpc = new CNpc();
 
 		pNpc->m_byMoveType = bActType;
@@ -521,10 +504,6 @@ void CServerDlg::AllNpcInfo()
 		serverInfo << uint16(m_TotalNPC);
 		m_socketMgr.SendAll(&serverInfo);
 	}
-
-	if (m_MonsterRespawnInformationArray.GetSize() > 0)
-		foreach_stlmap_nolock (itr, m_MonsterRespawnInformationArray)
-		SpawnEventNpc(itr->second->sSid,itr->second->IsMonster,itr->second->ZoneID,itr->second->fX,itr->second->fY,itr->second->fZ);
 }
 
 Unit * CServerDlg::GetUnitPtr(uint16 id)

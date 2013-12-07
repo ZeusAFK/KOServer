@@ -55,6 +55,7 @@ typedef std::vector<_MONSTER_SUMMON_LIST>	MonsterSummonList;
 typedef CSTLMap <MonsterSummonList>			MonsterSummonListArray;
 typedef CSTLMap <_MONSTER_SUMMON_LIST_ZONE>	MonsterSummonListZoneArray;
 typedef CSTLMap <_MONSTER_RESPAWN_LIST>	MonsterRespawnListArray;
+typedef CSTLMap <_MONSTER_RESPAWN_LIST_INFORMATION>	MonsterRespawnListInformationArray;
 
 typedef CSTLMap <_PREMIUM_ITEM>			PremiumItemArray;
 typedef CSTLMap <_PREMIUM_ITEM_EXP>		PremiumItemExpArray;
