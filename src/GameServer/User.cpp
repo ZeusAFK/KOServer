@@ -555,7 +555,7 @@ void CUser::RemoveRival()
 * @param	bIsKillReward	When set to true, enables the use of NP-modifying buffs
 *							and includes monthly NP gains.
 */
-void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*= false*/, bool bIsBonusReward)
+void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /* false */, bool bIsBonusReward /* false */, bool bIsAddLoyaltyMonthly /* true */)
 {
 	Packet result(WIZ_LOYALTY_CHANGE, uint8(LOYALTY_NATIONAL_POINTS));
 	uint32 nClanLoyaltyAmount = 0;
@@ -563,20 +563,22 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 	// If we're taking NP, we need to prevent us from hitting values below 0.
 	if (nChangeAmount < 0)
 	{
-		// Negate the value so it becomes positive (i.e. -50 -> 50) 
+		// Negate the value so it becomes positive (i.e. -50 -> 50)
 		// so we can determine if we're trying to take more NP than we have.
 		uint32 amt = -nChangeAmount; /* avoids unsigned/signed comparison warning */
 
 		if (amt > m_iLoyalty)
 			m_iLoyalty = 0;
-		else 
+		else
 			m_iLoyalty += nChangeAmount;
 
 		// We should only adjust monthly NP when NP was lost when killing a player.
 		if (bIsKillReward)
 		{
-			if (amt > m_iLoyaltyMonthly) m_iLoyaltyMonthly = 0;
-			else m_iLoyaltyMonthly += nChangeAmount;
+			if (amt > m_iLoyaltyMonthly)
+				m_iLoyaltyMonthly = 0;
+			else 
+				m_iLoyaltyMonthly += nChangeAmount;
 		}
 	}
 	// We're simply adding NP here.
@@ -590,6 +592,10 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 		{
 			// Add on any additional NP gained from items/skills.
 			nChangeAmount += m_bItemNPBonus + m_bSkillNPBonus;
+
+			// Add monument bonus.
+			if (isInPKZone() && g_pMain->m_nPVPMonumentNation[GetZoneID()] == GetNation())
+				nChangeAmount += PVP_MONUMENT_NP_BONUS;
 		}
 
 		if (m_iLoyalty + nChangeAmount > LOYALTY_MAX)
@@ -597,74 +603,80 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 		else
 			m_iLoyalty += nChangeAmount;
 
-		if (isInPKZone())
+		if (isInPKZone() && !bIsBonusReward)
 		{
-			if (bIsKillReward)
-				if (g_pMain->m_nPVPMonumentNation[GetZoneID()] == GetNation())
-					nChangeAmount += PVP_MONUMENT_NP_BONUS;
+			if (GetZoneID() == ZONE_ARDREAM || GetZoneID() == ZONE_RONARK_LAND_BASE)
+				bIsAddLoyaltyMonthly = false;
 
 			m_iLoyaltyDaily += nChangeAmount;
 			UpdatePlayerRank();
 		}
+
 		//// We should only apply additional monthly NP when NP was gained as a reward for killing a player.
 		if (!bIsBonusReward)
 		{
-			if (m_iLoyaltyMonthly + nChangeAmount > LOYALTY_MAX)
-				m_iLoyaltyMonthly = LOYALTY_MAX;
-			else
-				m_iLoyaltyMonthly += nChangeAmount;
+			if (bIsAddLoyaltyMonthly)
+			{
+				if (m_iLoyaltyMonthly + nChangeAmount > LOYALTY_MAX)
+					m_iLoyaltyMonthly = LOYALTY_MAX;
+				else
+					m_iLoyaltyMonthly += nChangeAmount;
+			}
 		}
 
 		if (bIsKillReward)
 		{
-			if (g_pMain->m_nBonusPVPWarExp > 0 && (isInPKZone() || GetMap()->isWarZone()))
-				ExpChange(g_pMain->m_nBonusPVPWarExp, true);
+			m_iLoyalty += GetPremiumProperty(PremiumBonusLoyalty);
 
-			if (m_bPremiumType != 0)
-			{
-				m_iLoyalty += GetPremiumProperty(PremiumBonusLoyalty);
+			if (bIsAddLoyaltyMonthly)
 				m_iLoyaltyMonthly += GetPremiumProperty(PremiumBonusLoyalty);
 
-				if (isInPKZone())
-					m_iLoyaltyPremiumBonus += GetPremiumProperty(PremiumBonusLoyalty);
-			}
+			m_iLoyaltyPremiumBonus += GetPremiumProperty(PremiumBonusLoyalty);
 		}
 
-		if (m_bKnights != 0 && !bIsBonusReward)
+		CKnights * pKnights = g_pMain->GetClanPtr(GetClanID());
+
+		if (pKnights && pKnights->m_byFlag >= ClanTypeAccredited5 && pKnights->GetClanPointMethod() == 0 && !bIsBonusReward)
 		{
-			CKnights * pKnights = g_pMain->GetClanPtr(GetClanID());
-
-			if (pKnights != nullptr && pKnights->m_byFlag >= ClanTypeAccredited5 && pKnights->GetClanPointMethod() == 0)
+			if (pKnights->m_sMembers > 0 && pKnights->m_sMembers <= MAX_CLAN_USERS)
 			{
-				if (pKnights->m_sMembers > 0 && pKnights->m_sMembers <= MAX_CLAN_USERS)
-				{
-					if (pKnights->m_sMembers <= 5)
-						nClanLoyaltyAmount = 1;
-					else if (pKnights->m_sMembers <= 10)
-						nClanLoyaltyAmount = 2;
-					else if (pKnights->m_sMembers <= 15)
-						nClanLoyaltyAmount = 3;
-					else if (pKnights->m_sMembers <= 20)
-						nClanLoyaltyAmount = 4;
-					else if (pKnights->m_sMembers <= 25)
-						nClanLoyaltyAmount = 5;
-					else if (pKnights->m_sMembers <= 30)
-						nClanLoyaltyAmount = 6;
-					else if (pKnights->m_sMembers > 30)
-						nClanLoyaltyAmount = 7;
+				if (pKnights->m_sMembers <= 5)
+					nClanLoyaltyAmount = 1;
+				else if (pKnights->m_sMembers <= 10)
+					nClanLoyaltyAmount = 2;
+				else if (pKnights->m_sMembers <= 15)
+					nClanLoyaltyAmount = 3;
+				else if (pKnights->m_sMembers <= 20)
+					nClanLoyaltyAmount = 4;
+				else if (pKnights->m_sMembers <= 25)
+					nClanLoyaltyAmount = 5;
+				else if (pKnights->m_sMembers <= 30)
+					nClanLoyaltyAmount = 6;
+				else if (pKnights->m_sMembers > 30)
+					nClanLoyaltyAmount = 7;
 
-					m_iLoyalty -= nClanLoyaltyAmount;
-					CKnightsManager::AddUserDonatedNP(GetClanID(), m_strUserID, nClanLoyaltyAmount, true);
-				}
+				m_iLoyalty -= nClanLoyaltyAmount;
+				CKnightsManager::AddUserDonatedNP(GetClanID(), m_strUserID, nClanLoyaltyAmount, true);
 			}
 		}
 	}
 
-	result	<< m_iLoyalty << m_iLoyaltyMonthly
+	result << m_iLoyalty << m_iLoyaltyMonthly
 		<< uint32(0) // Clan donations(? Donations made by this user? For the clan overall?)
 		<< nClanLoyaltyAmount; // Premium NP(? Additional NP gained?)
 
 	Send(&result);
+
+	// Player is give first np, second exp and third meat dumpling etc.
+	if (bIsKillReward && nChangeAmount > 0)
+	{
+		if (g_pMain->m_nBonusPVPWarExp > 0 && (isInPKZone() || GetMap()->isWarZone()))
+			ExpChange(g_pMain->m_nBonusPVPWarExp, true);
+
+		// Additionally, we should receive a "Meat dumpling"
+		if (isInPKZone())
+			GiveItem(ITEM_MEAT_DUMPLING);
+	}
 }
 
 /**
@@ -2663,8 +2675,8 @@ void CUser::LoyaltyChange(int16 tid, uint16 bonusNP /*= 0*/)
 	loyalty_source += bonusNP;
 	loyalty_target -= bonusNP;
 
-	SendLoyaltyChange(loyalty_source, true);
-	pTUser->SendLoyaltyChange(loyalty_target, true);
+	SendLoyaltyChange(loyalty_source, true, false, pTUser->GetMonthlyLoyalty() > 0 ? true : false);
+	pTUser->SendLoyaltyChange(loyalty_target, true, false, pTUser->GetMonthlyLoyalty() > 0 ? true : false);
 
 	// TODO: Move this to a better place (death handler, preferrably)
 	// If a war's running, and we died/killed in a war zone... (this method should NOT be so tied up in specifics( 
@@ -2927,13 +2939,14 @@ void CUser::LoyaltyDivide(int16 tid, uint16 bonusNP /*= 0*/)
 	for (int j = 0; j < MAX_PARTY_USERS; j++) // Distribute loyalty amongst party members.
 	{
 		CUser *pUser = g_pMain->GetUserPtr(pParty->uid[j]);
+
 		if (pUser == nullptr)
 			continue;
 
-		pUser->SendLoyaltyChange(loyalty_source, true);
+		pUser->SendLoyaltyChange(loyalty_source, true, false, pTUser->GetMonthlyLoyalty() > 0 ? true : false);
 	}
 
-	pTUser->SendLoyaltyChange(loyalty_target, true);
+	pTUser->SendLoyaltyChange(loyalty_target, true, false, pTUser->GetMonthlyLoyalty() > 0 ? true : false);
 }
 
 int16 CUser::GetLoyaltyDivideSource(uint8 totalmember)
@@ -2948,7 +2961,6 @@ int16 CUser::GetLoyaltyDivideSource(uint8 totalmember)
 		nBaseLoyalty = RONARK_LAND_KILL_LOYALTY_SOURCE;
 	else
 		nBaseLoyalty = OTHER_ZONE_KILL_LOYALTY_SOURCE;
-
 
 	int16 nMaxLoyalty = (nBaseLoyalty * 2) - ((nBaseLoyalty * 2) / MAX_PARTY_USERS);
 	int16 nMinLoyalty = nMaxLoyalty / MAX_PARTY_USERS;
@@ -4355,64 +4367,42 @@ void CUser::OnDeath(Unit *pKiller)
 					}
 					else
 					{
-						// In PVP and War zones
-						if (isInPKZone() || GetMap()->isWarZone() || g_pMain->m_byBattleOpen == NATION_BATTLE)
+						uint16 bonusNP = 0;
+						bool bKilledByRival = false;
+
+						if (!GetMap()->isWarZone() && g_pMain->m_byBattleOpen != NATION_BATTLE)
 						{
-							uint16 bonusNP = 0;
-							bool bKilledByRival = false;
+							// Show death notices in PVP zones
+							noticeType = DeathNoticeCoordinates;
 
-							if (!GetMap()->isWarZone() && g_pMain->m_byBattleOpen != NATION_BATTLE)
+							// If the killer has us set as their rival, reward them & remove the rivalry.
+							bKilledByRival = (!pUser->hasRivalryExpired() && pUser->GetRivalID() == GetID());
+							if (bKilledByRival)
 							{
-								// Show death notices in PVP zones
-								noticeType = DeathNoticeCoordinates;
+								// If we are our killer's rival, use the rival notice instead.
+								noticeType = DeathNoticeRival;
 
-								// If the killer has us set as their rival, reward them & remove the rivalry.
-								bKilledByRival = (!pUser->hasRivalryExpired() && pUser->GetRivalID() == GetID());
-								if (bKilledByRival)
-								{
-									// If we are our killer's rival, use the rival notice instead.
-									noticeType = DeathNoticeRival;
+								// Apply bonus NP for rival kills
+								bonusNP += RIVALRY_NP_BONUS;
 
-									// Apply bonus NP for rival kills
-									bonusNP += RIVALRY_NP_BONUS;
-
-									// This player is no longer our rival
-									pUser->RemoveRival();
-								}
-
-								// The anger gauge is increased on each death.
-								// When your anger gauge is full (5 deaths), you can use the "Anger Explosion" skill.
-								if (!hasFullAngerGauge())
-									UpdateAngerGauge(++m_byAngerGauge);
-
+								// This player is no longer our rival
+								pUser->RemoveRival();
 							}
 
-							// Loyalty should be awarded on kill.
-							// Additionally, we should receive a "Meat dumpling"
-							if (!pUser->isInParty())
-							{
-								pUser->LoyaltyChange(GetID(), bonusNP);
-								if (!GetMap()->isWarZone() && !GetMap()->isNationPVPZone())
-									pUser->GiveItem(ITEM_MEAT_DUMPLING);
-							}
-							// In parties, the loyalty should be divided up across the party.
-							// Each party member in range should also receive a "Meat Dumpling".
-							else
-							{
-								pUser->LoyaltyDivide(GetID(), bonusNP);
+							// The anger gauge is increased on each death.
+							// When your anger gauge is full (5 deaths), you can use the "Anger Explosion" skill.
+							if (!hasFullAngerGauge())
+								UpdateAngerGauge(++m_byAngerGauge);
 
-								_PARTY_GROUP * pParty = g_pMain->GetPartyPtr(GetPartyID());
-								if (pParty)
-								{
-									for (uint8 i = 0; i < MAX_PARTY_USERS; i++)
-									{
-										CUser * pPartyUser = g_pMain->GetUserPtr(pParty->uid[i]);
-										if (pPartyUser && !GetMap()->isWarZone() && !GetMap()->isNationPVPZone())
-											pPartyUser->GiveItem(ITEM_MEAT_DUMPLING);
-									}
-								}
-							}
 						}
+
+						// Loyalty should be awarded on kill.
+						if (!pUser->isInParty())
+							pUser->LoyaltyChange(GetID(), bonusNP);
+						// In parties, the loyalty should be divided up across the party.
+						// Each party member in range should also receive a "Meat Dumpling".
+						else
+							pUser->LoyaltyDivide(GetID(), bonusNP);
 
 						if (!pUser->GetMap()->isWarZone())
 							pUser->GoldChange(GetID(), 0);
