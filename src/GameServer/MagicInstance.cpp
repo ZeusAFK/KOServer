@@ -890,7 +890,9 @@ bool MagicInstance::IsAvailable()
 		else if (pSkill->sSkillLevel > pSkillCaster->GetLevel()) 
 			goto fail_return;
 
-		if (pSkill->bType[0] == 1) {	// Weapons verification in case of COMBO attack (another hacking prevention).
+		if (pSkill->bType[0] == 1) 
+		{
+			// Weapons verification in case of COMBO attack (another hacking prevention).
 			if (pSkill->sSkill == 1055 || pSkill->sSkill == 2055) {		// Weapons verification in case of dual wielding attacks !		
 				if (TO_USER(pSkillCaster)->isWeaponsDisabled())
 					return false;
@@ -898,11 +900,12 @@ bool MagicInstance::IsAvailable()
 				_ITEM_TABLE *pLeftHand = TO_USER(pSkillCaster)->GetItemPrototype(LEFTHAND),
 					*pRightHand = TO_USER(pSkillCaster)->GetItemPrototype(RIGHTHAND);
 
-				if ((pLeftHand != nullptr && !pLeftHand->isSword() && !pLeftHand->isAxe() && !pLeftHand->isMace())
-					|| (pRightHand != nullptr && !pRightHand->isSword() && !pRightHand->isAxe() && !pRightHand->isMace()))
+				if ((pLeftHand != nullptr && !pLeftHand->isSword() && !pLeftHand->isAxe() && !pLeftHand->isMace() && !pRightHand->isSpear())
+					|| (pRightHand != nullptr && !pRightHand->isSword() && !pRightHand->isAxe() && !pRightHand->isMace() && !pRightHand->isSpear()))
 					return false;
 			}
-			else if (pSkill->sSkill == 1056 || pSkill->sSkill == 2056) {	// Weapons verification in case of 2 handed attacks !
+			else if (pSkill->sSkill == 1056 || pSkill->sSkill == 2056) 
+			{	// Weapons verification in case of 2 handed attacks !
 				if (TO_USER(pSkillCaster)->isWeaponsDisabled())
 					return false;
 

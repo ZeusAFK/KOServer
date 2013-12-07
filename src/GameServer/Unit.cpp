@@ -1069,14 +1069,15 @@ void KOMap::SetZoneAttributes(int zoneNumber)
 		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
 		m_byMinLevel = MIN_LEVEL_ARDREAM, m_byMaxLevel = MAX_LEVEL_ARDREAM;
 		break;
-	case ZONE_RONARK_LAND:
-		m_zoneType = ZoneAbilityPVP;
-		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
-		m_byMinLevel = MIN_LEVEL_RONARK_LAND, m_byMaxLevel = MAX_LEVEL;
 	case ZONE_RONARK_LAND_BASE:
 		m_zoneType = ZoneAbilityPVP;
 		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
 		m_byMinLevel = MIN_LEVEL_RONARK_LAND_BASE, m_byMaxLevel = MAX_LEVEL_RONARK_LAND_BASE;
+		break;
+	case ZONE_RONARK_LAND:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
+		m_byMinLevel = MIN_LEVEL_RONARK_LAND, m_byMaxLevel = MAX_LEVEL;
 		break;
 	case ZONE_KROWAZ_DOMINION:
 		m_zoneType = ZoneAbilityPVPNeutralNPCs;
