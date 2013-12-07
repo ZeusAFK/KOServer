@@ -577,25 +577,26 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 		// We should only adjust monthly NP when NP was lost when killing a player.
 		if (bIsKillReward)
 		{
-			if (nChangeAmountLoyaltyMonthly > 40 && bIsAddLoyaltyMonthly)
-				nChangeAmountLoyaltyMonthly += 20;
-			else 
-				nChangeAmountLoyaltyMonthly += 10;
+			if (GetZoneID() == ZONE_ARDREAM || GetZoneID() == ZONE_RONARK_LAND_BASE)
+				bIsAddLoyaltyMonthly = false;
 
-			if (amt > m_iLoyaltyMonthly)
-				m_iLoyaltyMonthly = 0;
-			else 
-				m_iLoyaltyMonthly += nChangeAmountLoyaltyMonthly;
+			if (bIsAddLoyaltyMonthly)
+			{
+				if (nChangeAmountLoyaltyMonthly > 40)
+					nChangeAmountLoyaltyMonthly += 20;
+				else 
+					nChangeAmountLoyaltyMonthly += 10;
+
+				if (amt > m_iLoyaltyMonthly)
+					m_iLoyaltyMonthly = 0;
+				else 
+					m_iLoyaltyMonthly += nChangeAmountLoyaltyMonthly;
+			}
 		}
 	}
 	// We're simply adding NP here.
 	else
 	{
-		if (nChangeAmountLoyaltyMonthly > 40 && bIsAddLoyaltyMonthly)
-			nChangeAmountLoyaltyMonthly -= 20;
-		else 
-			nChangeAmountLoyaltyMonthly -= 10;
-
 		// If you're using an NP modifying buff then add the bonus
 		nChangeAmount = m_bNPGainAmount * nChangeAmount / 100;
 
@@ -629,6 +630,11 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 		{
 			if (bIsAddLoyaltyMonthly)
 			{
+				if (nChangeAmountLoyaltyMonthly > 40)
+					nChangeAmountLoyaltyMonthly -= 20;
+				else 
+					nChangeAmountLoyaltyMonthly -= 10;
+
 				if (m_iLoyaltyMonthly + nChangeAmountLoyaltyMonthly > LOYALTY_MAX)
 					m_iLoyaltyMonthly = LOYALTY_MAX;
 				else
