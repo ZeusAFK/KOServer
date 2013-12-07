@@ -560,6 +560,8 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 	Packet result(WIZ_LOYALTY_CHANGE, uint8(LOYALTY_NATIONAL_POINTS));
 	uint32 nClanLoyaltyAmount = 0;
 
+	int32 nChangeAmountLoyaltyMonthly = nChangeAmount;
+
 	// If we're taking NP, we need to prevent us from hitting values below 0.
 	if (nChangeAmount < 0)
 	{
@@ -575,15 +577,25 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 		// We should only adjust monthly NP when NP was lost when killing a player.
 		if (bIsKillReward)
 		{
+			if (nChangeAmountLoyaltyMonthly > 40 && bIsAddLoyaltyMonthly)
+				nChangeAmountLoyaltyMonthly += 20;
+			else 
+				nChangeAmountLoyaltyMonthly += 10;
+
 			if (amt > m_iLoyaltyMonthly)
 				m_iLoyaltyMonthly = 0;
 			else 
-				m_iLoyaltyMonthly += nChangeAmount;
+				m_iLoyaltyMonthly += nChangeAmountLoyaltyMonthly;
 		}
 	}
 	// We're simply adding NP here.
 	else
 	{
+		if (nChangeAmountLoyaltyMonthly > 40 && bIsAddLoyaltyMonthly)
+			nChangeAmountLoyaltyMonthly -= 20;
+		else 
+			nChangeAmountLoyaltyMonthly -= 10;
+
 		// If you're using an NP modifying buff then add the bonus
 		nChangeAmount = m_bNPGainAmount * nChangeAmount / 100;
 
@@ -617,10 +629,10 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 		{
 			if (bIsAddLoyaltyMonthly)
 			{
-				if (m_iLoyaltyMonthly + nChangeAmount > LOYALTY_MAX)
+				if (m_iLoyaltyMonthly + nChangeAmountLoyaltyMonthly > LOYALTY_MAX)
 					m_iLoyaltyMonthly = LOYALTY_MAX;
 				else
-					m_iLoyaltyMonthly += nChangeAmount;
+					m_iLoyaltyMonthly += nChangeAmountLoyaltyMonthly;
 			}
 		}
 
@@ -2962,40 +2974,17 @@ int16 CUser::GetLoyaltyDivideSource(uint8 totalmember)
 	else
 		nBaseLoyalty = OTHER_ZONE_KILL_LOYALTY_SOURCE;
 
-	int16 nMaxLoyalty = (nBaseLoyalty * 2) - ((nBaseLoyalty * 2) / MAX_PARTY_USERS);
+	int16 nMaxLoyalty = (nBaseLoyalty * 3) - 2;
 	int16 nMinLoyalty = nMaxLoyalty / MAX_PARTY_USERS;
 	int16 nLoyaltySource = nMinLoyalty;
 
 	if (nLoyaltySource > 0)
 	{
-		if (totalmember == 1)
-			nLoyaltySource = nBaseLoyalty;
-		else if (totalmember == 2)
-			nLoyaltySource = (nBaseLoyalty + MAX_PARTY_USERS) / 2;
-		else if (totalmember == 3)
-		{
-			nLoyaltySource = (nBaseLoyalty + MAX_PARTY_USERS) / 3;
-			for (int i = 0; i < totalmember - 1; i++)
-				nLoyaltySource += 2;
-		}
-		else if (totalmember >= 4 && totalmember <= MAX_PARTY_USERS)
-		{
-			nLoyaltySource = (nBaseLoyalty + MAX_PARTY_USERS) / 4;
-
-			if (totalmember == 4)
-				nLoyaltySource += 6;
-			else if (totalmember == 5)
-				nLoyaltySource += 4;
-			else if (totalmember == 6)
-				nLoyaltySource += 2;
-			else if (totalmember == 7)
-				nLoyaltySource = nLoyaltySource;
-			else if (totalmember == 8)
-				nLoyaltySource -= 2;
-		}
+		for (int i = 0; i < (MAX_PARTY_USERS - totalmember); i++)
+			nLoyaltySource += 2;
 	}
 
-	return nLoyaltySource;
+	return nLoyaltySource -1;
 }
 
 int16 CUser::GetLoyaltyDivideTarget()
