@@ -47,38 +47,9 @@ CGameServerDlg::CGameServerDlg()
 
 	m_nCastleCapture = 0;
 
-	m_bKarusFlag = 0;
-	m_bElmoradFlag = 0;
+	ResetBattleZone();
 
-	m_byKarusOpenFlag = false;
-	m_byElmoradOpenFlag = false;
-	m_byBanishFlag = false;
-	m_sBanishDelay = 0;
-
-	m_sKilledKarusNpc = 0;
-	m_sKilledElmoNpc = 0;
-
-	m_sKarusDead = 0;
-	m_sElmoradDead = 0;
-
-	m_sKarusMonumentPoint = 0;
-	m_sElmoMonumentPoint = 0;
-	m_sKarusMonuments = 0;
-	m_sElmoMonuments = 0;
-
-	m_bVictory = 0;	
-	m_byOldVictory = 0;
-	m_byBattleSave = false;
-	m_sKarusCount = 0;
-	m_sElmoradCount = 0;
-
-	m_byBattleZone = 0;
-	m_byBattleZoneType = 0;
-	m_byBattleOpen = NO_BATTLE;
-	m_byOldBattleOpen = NO_BATTLE;
-	m_byBattleOpenedTime = 0;
 	m_bFirstServerFlag = false;
-	// m_bPointCheckFlag = false;
 	m_bPointCheckFlag = true;
 
 	m_nServerNo = 0;
@@ -1940,30 +1911,42 @@ void CGameServerDlg::BanishLosers()
 void CGameServerDlg::ResetBattleZone()
 {
 	m_bVictory = 0;
-	m_byBanishFlag = false;
+	
 	m_sBanishDelay = 0;
+	m_byBanishFlag = false;
+
 	m_bKarusFlag = 0;
 	m_bElmoradFlag = 0;
+	
 	m_byKarusOpenFlag = false;
 	m_byElmoradOpenFlag = false;
+
+	m_byBattleSave = false;
+
 	m_byBattleZone = 0;
 	m_byBattleZoneType = 0;
+
 	m_byBattleOpen = NO_BATTLE;
 	m_byOldBattleOpen = NO_BATTLE;
+	
 	m_byBattleOpenedTime = 0;
 	m_byBattleRemainingTime = 0;
+	m_sBattleTimeDelay = 0;
+
 	m_sKarusDead = 0;
 	m_sElmoradDead = 0;
-	m_byBattleSave = false;
+	
 	m_sKarusCount = 0;
 	m_sElmoradCount = 0;
+	
 	m_sKilledKarusNpc = 0;
 	m_sKilledElmoNpc = 0;
+	
 	m_sKarusMonumentPoint = 0;
 	m_sElmoMonumentPoint = 0;
 	m_sKarusMonuments = 0;
 	m_sElmoMonuments = 0;
-	m_sBattleTimeDelay = 0;
+
 	m_NationMonumentInformationArray.DeleteAllData();
 }
 
