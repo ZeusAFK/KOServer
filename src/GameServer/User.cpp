@@ -1773,11 +1773,7 @@ void CUser::HpChange(int amount, Unit *pAttacker /*= nullptr*/, bool bSendToAI /
 		if (isGM())
 			return;
 
-		if (m_bInvisibilityType != INVIS_NONE)
-		{
-			CMagicProcess::RemoveStealth(this, INVIS_DISPEL_ON_MOVE);
-			CMagicProcess::RemoveStealth(this, INVIS_DISPEL_ON_ATTACK);
-		}
+		RemoveStealth();
 
 		// Handle the mirroring of damage.
 		if (m_bMirrorDamage && isInParty())
@@ -4580,7 +4576,7 @@ bool CUser::CanUseItem(uint32 nItemID, uint16 sCount /*= 1*/)
 	{
 		// Various NPC transformations ("Transform Scrolls") are exempt from this rule -- it's just monsters.
 		// Also, siege transformations can use their own buff scrolls.
-		if (isMonsterTransformation())
+		if (isNPCTransformation() && isSiegeTransformation())
 			return false;
 	}
 
@@ -5251,4 +5247,13 @@ uint32 CUser::GetEventTrigger()
 	}
 
 	return 0;
+}
+
+void CUser::RemoveStealth()
+{
+	if (this->m_bInvisibilityType != INVIS_NONE)
+	{
+		CMagicProcess::RemoveStealth(this, INVIS_DISPEL_ON_MOVE);
+		CMagicProcess::RemoveStealth(this, INVIS_DISPEL_ON_ATTACK);
+	}
 }

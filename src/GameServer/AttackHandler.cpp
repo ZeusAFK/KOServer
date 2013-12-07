@@ -18,11 +18,7 @@ void CUser::Attack(Packet & pkt)
 	if (isInSafetyArea())
 		return;
 
-	if (m_bInvisibilityType != INVIS_NONE)
-	{
-		CMagicProcess::RemoveStealth(this, INVIS_DISPEL_ON_MOVE);
-		CMagicProcess::RemoveStealth(this, INVIS_DISPEL_ON_ATTACK);
-	}
+	RemoveStealth();
 
 	// If you're holding a weapon, do a client-based (ugh, do not trust!) delay check.
 	_ITEM_TABLE *pTable = GetItemPrototype(RIGHTHAND);

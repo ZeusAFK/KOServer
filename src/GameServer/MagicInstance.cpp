@@ -437,7 +437,7 @@ bool MagicInstance::CheckType3Prerequisites()
 
 		// It appears that the server should reject any attacks or heals
 		// on players that have transformed into monsters.
-		if (TO_USER(pSkillTarget)->isMonsterTransformation()
+		if ((TO_USER(pSkillTarget)->isNPCTransformation() || TO_USER(pSkillTarget)->isSiegeTransformation())
 			&& !pSkillCaster->CanAttack(pSkillTarget))
 			return false;
 
@@ -572,12 +572,8 @@ bool MagicInstance::ExecuteSkill(uint8 bType)
 	{
 		// If a player is stealthed, and they are casting a type 1/2/3/7 skill
 		// it is classed as an attack, so they should be unstealthed.
-		if (TO_USER(pSkillCaster)->m_bInvisibilityType != INVIS_NONE
-			&& ((bType >= 1 && bType <= 3) || (bType == 7)))
-		{
-			CMagicProcess::RemoveStealth(pSkillCaster, INVIS_DISPEL_ON_MOVE);
-			CMagicProcess::RemoveStealth(pSkillCaster, INVIS_DISPEL_ON_ATTACK);
-		}
+		if ((bType >= 1 && bType <= 3) || (bType == 7))
+			TO_USER(pSkillCaster)->RemoveStealth();
 	}
 
 	switch (bType)
@@ -1530,6 +1526,12 @@ bool MagicInstance::ExecuteType4()
 
 			if(pTarget == nullptr)
 				continue; 
+
+			if (TO_USER(pSkillCaster)->isInArena() && pSkillCaster == pTarget)
+				continue;
+
+			if (pTarget->isPlayer())
+				TO_USER(pTarget)->RemoveStealth();
 
 			if (!pTarget->isDead() && !pTarget->isBlinking() && pTarget->isAttackable()
 				&& CMagicProcess::UserRegionCheck(pSkillCaster, pTarget, pSkill, pType->bRadius, sData[0], sData[2]))

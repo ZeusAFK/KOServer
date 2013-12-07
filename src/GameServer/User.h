@@ -664,6 +664,7 @@ public:
 	void SetUserDailyOp(uint8 type = 0, bool isInsert = false);
 
 	uint32 GetEventTrigger();
+	void RemoveStealth();
 
 	COMMAND_HANDLER(HandleTestCommand);
 	COMMAND_HANDLER(HandleGiveItemCommand);
