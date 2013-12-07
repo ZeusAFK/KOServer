@@ -1026,15 +1026,24 @@ void KOMap::SetZoneAttributes(int zoneNumber)
 		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_ATTACK_SAME_NATION | ZF_FRIENDLY_NPCS;
 		break;
 	case ZONE_ORC_ARENA:
+		m_zoneType = ZoneAbilityNeutral;
+		m_zoneFlags = ZF_TRADE_OTHER_NATION | ZF_TALK_OTHER_NATION | ZF_FRIENDLY_NPCS;
+		break;
 	case ZONE_BLOOD_DON_ARENA:
+		m_zoneType = ZoneAbilityNeutral;
+		m_zoneFlags = ZF_TRADE_OTHER_NATION | ZF_TALK_OTHER_NATION | ZF_FRIENDLY_NPCS;
+		break;
 	case ZONE_GOBLIN_ARENA:
-	case ZONE_FORGOTTEN_TEMPLE:
 		m_zoneType = ZoneAbilityNeutral;
 		m_zoneFlags = ZF_TRADE_OTHER_NATION | ZF_TALK_OTHER_NATION | ZF_FRIENDLY_NPCS;
 		break;
 	case ZONE_CAITHAROS_ARENA:
 		m_zoneType = ZoneAbilityCaitharosArena;
 		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_FRIENDLY_NPCS;
+		break;
+	case ZONE_FORGOTTEN_TEMPLE:
+		m_zoneType = ZoneAbilityNeutral;
+		m_zoneFlags = ZF_TRADE_OTHER_NATION | ZF_TALK_OTHER_NATION | ZF_FRIENDLY_NPCS;
 		break;
 	case ZONE_BATTLE:
 		m_zoneType = ZoneAbilityPVP;
@@ -1047,6 +1056,7 @@ void KOMap::SetZoneAttributes(int zoneNumber)
 	case ZONE_BATTLE3:
 		m_zoneType = ZoneAbilityPVP;
 		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
+		m_byMinLevel = MIN_LEVEL_NIEDS_TRIANGLE, m_byMaxLevel = MAX_LEVEL_NIEDS_TRIANGLE;
 		break;
 	case ZONE_BATTLE4:
 		m_zoneType = ZoneAbilityPVP;

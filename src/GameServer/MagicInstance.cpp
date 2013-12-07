@@ -782,7 +782,6 @@ bool MagicInstance::IsAvailable()
 		break;
 
 	case MORAL_ENEMY:
-		// TODO : Kontrol edilecek warrior 1-59 level arasında kaldığı sürece skillerini kullanamıyor, +60 ise kullanabiliyor.
 		// Allow for archery skills with no defined targets (e.g. an arrow from 'multiple shot' not hitting any targets). 
 		// These should be ignored, not fail.
 		if (pSkillTarget != nullptr
