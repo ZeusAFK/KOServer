@@ -726,7 +726,7 @@ public:
 	void ExchangeAgree(Packet & pkt);
 	void ExchangeAdd(Packet & pkt);
 	void ExchangeDecide();
-	void ExchangeCancel();
+	void ExchangeCancel(bool bIsOnDeath = false);
 
 	void InitExchange(bool bStart);
 	bool CheckExchange();

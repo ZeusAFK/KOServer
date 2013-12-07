@@ -4286,6 +4286,11 @@ void CUser::OnDeath(Unit *pKiller)
 
 	m_bResHpType = USER_DEAD;
 
+	// Player is dead stop other process.
+	HandleMiningStop((Packet)(WIZ_MINING, MiningStop));
+	MerchantClose();
+	ExchangeCancel(true);
+
 	if (GetFame() == COMMAND_CAPTAIN)
 	{
 		if (GetNation() == KARUS)

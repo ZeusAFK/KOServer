@@ -282,10 +282,10 @@ void CUser::ExchangeDecide()
 	pUser->InitExchange(false);
 }
 
-void CUser::ExchangeCancel()
+void CUser::ExchangeCancel(bool bIsOnDeath)
 {
-	if (!isTrading()
-		|| isDead())
+	if (!isTrading() 
+		|| (!bIsOnDeath && isDead()))
 		return;
 
 	CUser *pUser = g_pMain->GetUserPtr(m_sExchangeUser);
