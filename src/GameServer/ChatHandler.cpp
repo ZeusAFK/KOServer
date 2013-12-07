@@ -549,8 +549,8 @@ COMMAND_HANDLER(CGameServerDlg::HandleWar6OpenCommand)
 COMMAND_HANDLER(CUser::HandleWarMOpenCommand) { return g_pMain->HandleWarMOpenCommand(vargs, args, description); }
 COMMAND_HANDLER(CGameServerDlg::HandleWarMOpenCommand)
 {
-	BattleZoneOpen(BATTLEZONE_OPEN, 3);
 	g_pMain->m_byBattleZoneType = ZONE_ARDREAM;
+	BattleZoneOpen(BATTLEZONE_OPEN, 3);
 	return true;
 }
 
