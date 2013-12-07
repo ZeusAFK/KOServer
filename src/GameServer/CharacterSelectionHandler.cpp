@@ -168,7 +168,7 @@ void CUser::SelectCharacter(Packet & pkt)
 	// Disallow players from relogging in the opposite nation's home zone when an invasion's not running.
 	if (((GetZoneID() != GetNation() && GetZoneID() <= ZONE_ELMORAD && !g_pMain->m_byBattleOpen)
 		// also disallow players from logging back into war zones that aren't currently active...
-			|| (GetMap()->isWarZone() && (GetZoneID() - ZONE_BATTLE_BASE) != g_pMain->m_byBattleZone)
+			|| (GetMap()->isWarZone() && !g_pMain->m_byBattleOpen)
 			// Chaos, bdw and juraid montuain
 			|| isInTempleEventZone()
 			// Ronark Land, Ardream, RLB, Bifrost, Krowaz Dominion.
@@ -176,7 +176,7 @@ void CUser::SelectCharacter(Packet & pkt)
 			|| GetZoneID() == ZONE_ARDREAM 
 			|| GetZoneID() == ZONE_RONARK_LAND_BASE
 			|| GetZoneID() == ZONE_BIFROST
-			|| GetZoneID() == ZONE_KROWAZ_DOMINION)) && !isGM()))
+			|| GetZoneID() == ZONE_KROWAZ_DOMINION))) && !isGM())
 	{
 		NativeZoneReturn();
 		Disconnect();

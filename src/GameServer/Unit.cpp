@@ -973,12 +973,20 @@ void KOMap::SetZoneAttributes(int zoneNumber)
 	switch (zoneNumber)
 	{
 	case ZONE_KARUS:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_CLAN_UPDATE;
+		m_byMinLevel = MIN_LEVEL_NATION_BASE, m_byMaxLevel = MAX_LEVEL;
+		break;
 	case ZONE_ELMORAD:
 		m_zoneType = ZoneAbilityPVP;
 		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_CLAN_UPDATE;
 		m_byMinLevel = MIN_LEVEL_NATION_BASE, m_byMaxLevel = MAX_LEVEL;
 		break;
 	case ZONE_KARUS_ESLANT:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
+		m_byMinLevel = MIN_LEVEL_ESLANT, m_byMaxLevel = MAX_LEVEL;
+		break;
 	case ZONE_ELMORAD_ESLANT:
 		m_zoneType = ZoneAbilityPVP;
 		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
@@ -999,7 +1007,15 @@ void KOMap::SetZoneAttributes(int zoneNumber)
 		m_byMinLevel = MIN_LEVEL_BIFROST, m_byMaxLevel = MAX_LEVEL;
 		break;
 	case ZONE_DESPERATION_ABYSS:
+		m_zoneType = ZoneAbilityPVPNeutralNPCs;
+		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_FRIENDLY_NPCS;
+		m_byMinLevel = MIN_LEVEL_NATION_BASE, m_byMaxLevel = MAX_LEVEL;
+		break;
 	case ZONE_HELL_ABYSS:
+		m_zoneType = ZoneAbilityPVPNeutralNPCs;
+		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_FRIENDLY_NPCS;
+		m_byMinLevel = MIN_LEVEL_NATION_BASE, m_byMaxLevel = MAX_LEVEL;
+		break;
 	case ZONE_DRAGON_CAVE:
 		m_zoneType = ZoneAbilityPVPNeutralNPCs;
 		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_FRIENDLY_NPCS;
@@ -1021,32 +1037,46 @@ void KOMap::SetZoneAttributes(int zoneNumber)
 		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_FRIENDLY_NPCS;
 		break;
 	case ZONE_BATTLE:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
+		break;
 	case ZONE_BATTLE2:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
+		break;
 	case ZONE_BATTLE3:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
+		break;
 	case ZONE_BATTLE4:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
+		break;
 	case ZONE_BATTLE5:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
+		break;
 	case ZONE_BATTLE6:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
+		break;
 	case ZONE_SNOW_BATTLE:
 		m_zoneType = ZoneAbilityPVP;
 		m_zoneFlags = ZF_ATTACK_OTHER_NATION | ZF_WAR_ZONE;
-
-		if (zoneNumber == ZONE_BATTLE3)
-			m_byMinLevel = MIN_LEVEL_NIEDS_TRIANGLE, m_byMaxLevel = MAX_LEVEL_NIEDS_TRIANGLE;
-		else
-			m_byMinLevel = MIN_LEVEL_WAR_ZONE, m_byMaxLevel = MAX_LEVEL;
+		break;
+	case ZONE_ARDREAM:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
+		m_byMinLevel = MIN_LEVEL_ARDREAM, m_byMaxLevel = MAX_LEVEL_ARDREAM;
 		break;
 	case ZONE_RONARK_LAND:
-	case ZONE_ARDREAM:
+		m_zoneType = ZoneAbilityPVP;
+		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
+		m_byMinLevel = MIN_LEVEL_RONARK_LAND, m_byMaxLevel = MAX_LEVEL;
 	case ZONE_RONARK_LAND_BASE:
 		m_zoneType = ZoneAbilityPVP;
 		m_zoneFlags = ZF_ATTACK_OTHER_NATION;
-
-		if (zoneNumber == ZONE_RONARK_LAND)
-			m_byMinLevel = MIN_LEVEL_RONARK_LAND, m_byMaxLevel = MAX_LEVEL;
-		else if (zoneNumber == ZONE_ARDREAM)
-			m_byMinLevel = MIN_LEVEL_ARDREAM, m_byMaxLevel = MAX_LEVEL_ARDREAM;
-		else if (zoneNumber == ZONE_RONARK_LAND_BASE)
-			m_byMinLevel = MIN_LEVEL_RONARK_LAND_BASE, m_byMaxLevel = MAX_LEVEL_RONARK_LAND_BASE;
+		m_byMinLevel = MIN_LEVEL_RONARK_LAND_BASE, m_byMaxLevel = MAX_LEVEL_RONARK_LAND_BASE;
 		break;
 	case ZONE_KROWAZ_DOMINION:
 		m_zoneType = ZoneAbilityPVPNeutralNPCs;
@@ -1067,6 +1097,8 @@ void KOMap::SetZoneAttributes(int zoneNumber)
 		m_byMinLevel = MIN_LEVEL_JURAD_MOUNTAIN, m_byMaxLevel = MAX_LEVEL;
 		break;
 	case ZONE_ISILOON_ARENA:
+		m_zoneType = ZoneAbilityPVPNeutralNPCs;
+		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_FRIENDLY_NPCS;
 	case ZONE_FELANKOR_ARENA:
 		m_zoneType = ZoneAbilityPVPNeutralNPCs;
 		m_zoneFlags = ZF_TALK_OTHER_NATION | ZF_ATTACK_OTHER_NATION | ZF_FRIENDLY_NPCS;

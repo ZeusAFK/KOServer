@@ -73,6 +73,7 @@ CGameServerDlg::CGameServerDlg()
 	m_sElmoradCount = 0;
 
 	m_byBattleZone = 0;
+	m_byBattleZoneType = 0;
 	m_byBattleOpen = NO_BATTLE;
 	m_byOldBattleOpen = NO_BATTLE;
 	m_byBattleOpenedTime = 0;
@@ -1713,7 +1714,7 @@ void CGameServerDlg::BattleZoneOpenTimer()
 
 			CheckNationMonumentRewards();
 		}
-		else if (WarElapsedTime >=  m_byBattleTime) // War is over.
+		else if (WarElapsedTime >= m_byBattleTime) // War is over.
 			BattleZoneClose();
 		else if (m_bVictory == 0) // War continues.
 		{
@@ -1744,12 +1745,19 @@ void CGameServerDlg::BattleZoneOpenTimer()
 void CGameServerDlg::BattleZoneResult(uint8 nation)
 {
 	m_bVictory = nation;
+	Announcement(DECLARE_WINNER, m_bVictory);
+	Announcement(DECLARE_LOSER, nation == KARUS ? ELMORAD : KARUS);
+
+	if (g_pMain->m_byBattleZoneType == ZONE_ARDREAM)
+	{
+		BattleZoneClose();
+		return;
+	}
+
 	m_byKarusOpenFlag = nation == ELMORAD ? true : false;
 	m_byElmoradOpenFlag = nation == KARUS ? true : false;
 	m_byBanishFlag = true;
 	m_sBanishDelay = 0;
-	Announcement(DECLARE_WINNER, m_bVictory);
-	Announcement(DECLARE_LOSER, nation == KARUS ? ELMORAD : KARUS);
 }
 
 void CGameServerDlg::BattleWinnerResult(BattleWinnerTypes winnertype)
@@ -1825,10 +1833,14 @@ void CGameServerDlg::BattleZoneOpen(int nType, uint8 bZone /*= 0*/)
 			SendEventRemainingTime(true, nullptr, ZONE_BATTLE4);
 
 		KickOutZoneUsers(ZONE_ARDREAM);
-		KickOutZoneUsers(ZONE_RONARK_LAND_BASE);
-		KickOutZoneUsers(ZONE_RONARK_LAND);
-		KickOutZoneUsers(ZONE_BIFROST);
-		KickOutZoneUsers(ZONE_KROWAZ_DOMINION);
+
+		if (m_byBattleZoneType == 0)
+		{
+			KickOutZoneUsers(ZONE_RONARK_LAND_BASE);
+			KickOutZoneUsers(ZONE_RONARK_LAND);
+			KickOutZoneUsers(ZONE_BIFROST);
+			KickOutZoneUsers(ZONE_KROWAZ_DOMINION);
+		}
 	}
 	else if (nType == BATTLEZONE_CLOSE && m_byBattleOpen != NO_BATTLE)
 		Announcement(BATTLEZONE_CLOSE);
@@ -1934,6 +1946,8 @@ void CGameServerDlg::ResetBattleZone()
 	m_bElmoradFlag = 0;
 	m_byKarusOpenFlag = false;
 	m_byElmoradOpenFlag = false;
+	m_byBattleZone = 0;
+	m_byBattleZoneType = 0;
 	m_byBattleOpen = NO_BATTLE;
 	m_byOldBattleOpen = NO_BATTLE;
 	m_byBattleOpenedTime = 0;

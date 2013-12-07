@@ -382,6 +382,7 @@ public:
 
 	uint8   m_byBattleOpen, m_byOldBattleOpen;					// 0:¿¸¿Ô¡ﬂ¿Ã æ∆¥‘, 1:¿¸¿Ô¡ﬂ(±π∞°∞£¿¸¿Ô), 2:¥´ΩŒøÚ¿¸¿Ô
 	uint8	m_byBattleZone;
+	uint8	m_byBattleZoneType;
 	uint8	m_bVictory, m_byOldVictory;
 	uint8	m_bKarusFlag, m_bElmoradFlag;
 	int32	m_byBattleOpenedTime;
@@ -485,6 +486,7 @@ public:
 	COMMAND_HANDLER(HandleWar4OpenCommand);
 	COMMAND_HANDLER(HandleWar5OpenCommand);
 	COMMAND_HANDLER(HandleWar6OpenCommand);
+	COMMAND_HANDLER(HandleWarMOpenCommand);
 	COMMAND_HANDLER(HandleSnowWarOpenCommand);
 	COMMAND_HANDLER(HandleWarCloseCommand);
 	COMMAND_HANDLER(HandleShutdownCommand);

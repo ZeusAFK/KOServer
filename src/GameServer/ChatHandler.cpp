@@ -19,6 +19,7 @@ void CGameServerDlg::InitServerCommands()
 		{ "open4",				&CGameServerDlg::HandleWar4OpenCommand,			"Opens war zone 4" },
 		{ "open5",				&CGameServerDlg::HandleWar5OpenCommand,			"Opens war zone 5" },
 		{ "open6",				&CGameServerDlg::HandleWar6OpenCommand,			"Opens war zone 6" },
+		{ "mopen",				&CGameServerDlg::HandleWarMOpenCommand,			"Opens dark lunar war zone" },
 		{ "snowopen",			&CGameServerDlg::HandleSnowWarOpenCommand,		"Opens the snow war zone" },
 		{ "close",				&CGameServerDlg::HandleWarCloseCommand,			"Closes the active war zone" },
 		{ "down",				&CGameServerDlg::HandleShutdownCommand,			"Shuts down the server" },
@@ -62,6 +63,7 @@ void CUser::InitChatCommands()
 		{ "open4",				&CUser::HandleWar4OpenCommand,					"Opens war zone 4" },
 		{ "open5",				&CUser::HandleWar5OpenCommand,					"Opens war zone 5" },
 		{ "open6",				&CUser::HandleWar6OpenCommand,					"Opens war zone 6" },
+		{ "mopen",				&CUser::HandleWarMOpenCommand,					"Opens dark lunar war zone" },
 		{ "captain",			&CUser::HandleCaptainCommand,					"Sets the captains/commanders for the war" },
 		{ "snowopen",			&CUser::HandleSnowWarOpenCommand,				"Opens the snow war zone" },
 		{ "close",				&CUser::HandleWarCloseCommand,					"Closes the active war zone" },
@@ -541,6 +543,14 @@ COMMAND_HANDLER(CUser::HandleWar6OpenCommand) { return !isGM() ? false : g_pMain
 COMMAND_HANDLER(CGameServerDlg::HandleWar6OpenCommand)
 {
 	BattleZoneOpen(BATTLEZONE_OPEN, 6);
+	return true;
+}
+
+COMMAND_HANDLER(CUser::HandleWarMOpenCommand) { return g_pMain->HandleWarMOpenCommand(vargs, args, description); }
+COMMAND_HANDLER(CGameServerDlg::HandleWarMOpenCommand)
+{
+	BattleZoneOpen(BATTLEZONE_OPEN, 3);
+	g_pMain->m_byBattleZoneType = ZONE_ARDREAM;
 	return true;
 }
 
