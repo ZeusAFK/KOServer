@@ -561,9 +561,6 @@ void CKingSystem::ElectionScheduleConfirmation(CUser * pUser, Packet & pkt)
 				<< byImpeachmentMonth
 				<< m_byImDay << m_byImHour << m_byImMinute;
 		} break;
-
-	default:
-		return;
 	}
 
 	pUser->Send(&result);
