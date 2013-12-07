@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "KingSystem.h"
 #include "../shared/DateTime.h"
 #include "Map.h"
@@ -1036,6 +1036,8 @@ void CKingSystem::KingTaxSystem(CUser * pUser, Packet & pkt)
 	{
 		// Collect King's fund
 	case 2:
+		pUser->GoldGain(m_nTerritoryTax);
+		/* Veritabanı Update Eklenecek / Satılan Eşyalar İçin Vergi Oranı Eklenecek ve Veritabanı Update Eklenecek. */
 		break;
 
 		// Lookup the tariff
@@ -1088,6 +1090,7 @@ void CKingSystem::KingTaxSystem(CUser * pUser, Packet & pkt)
 			}
 			else
 			{
+				pUser->GiveItem(KING_SCEPTER);
 				pUser->GiveItem(KING_SCEPTER);
 				result << int16(1);
 			}
