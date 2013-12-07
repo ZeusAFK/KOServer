@@ -41,13 +41,12 @@ CGameServerDlg::CGameServerDlg()
 	m_byKingWeatherEvent_Hour = 0;
 	m_byKingWeatherEvent_Minute = 0;
 
-	m_byExpEventAmount = m_byCoinEventAmount = 0;
+	m_byExpEventAmount = 0;
+	m_byCoinEventAmount = 0;
 
 	m_sPartyIndex = 0;
 
 	m_nCastleCapture = 0;
-
-	ResetBattleZone();
 
 	m_bFirstServerFlag = false;
 	m_bPointCheckFlag = true;
@@ -1911,13 +1910,13 @@ void CGameServerDlg::BanishLosers()
 void CGameServerDlg::ResetBattleZone()
 {
 	m_bVictory = 0;
-	
+
 	m_sBanishDelay = 0;
 	m_byBanishFlag = false;
 
 	m_bKarusFlag = 0;
 	m_bElmoradFlag = 0;
-	
+
 	m_byKarusOpenFlag = false;
 	m_byElmoradOpenFlag = false;
 
@@ -1928,20 +1927,20 @@ void CGameServerDlg::ResetBattleZone()
 
 	m_byBattleOpen = NO_BATTLE;
 	m_byOldBattleOpen = NO_BATTLE;
-	
+
 	m_byBattleOpenedTime = 0;
 	m_byBattleRemainingTime = 0;
 	m_sBattleTimeDelay = 0;
 
 	m_sKarusDead = 0;
 	m_sElmoradDead = 0;
-	
+
 	m_sKarusCount = 0;
 	m_sElmoradCount = 0;
-	
+
 	m_sKilledKarusNpc = 0;
 	m_sKilledElmoNpc = 0;
-	
+
 	m_sKarusMonumentPoint = 0;
 	m_sElmoMonumentPoint = 0;
 	m_sKarusMonuments = 0;

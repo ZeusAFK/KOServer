@@ -85,7 +85,7 @@ void CUser::Regene(uint8 regene_type, uint32 magicid /*= 0*/)
 	ASSERT(GetMap() != nullptr);
 
 	_OBJECT_EVENT* pEvent = nullptr;
-	_HOME_INFO* pHomeInfo = nullptr;
+	_START_POSITION* pStartPosition = nullptr;
 	float x = 0.0f, z = 0.0f;
 
 	if (!isDead())
@@ -106,8 +106,8 @@ void CUser::Regene(uint8 regene_type, uint32 magicid /*= 0*/)
 	}
 
 	// If we're in a home zone, we'll want the coordinates from there. Otherwise, assume our own home zone.
-	pHomeInfo = g_pMain->m_HomeArray.GetData(GetZoneID() <= ZONE_ELMORAD ? GetZoneID() : GetNation());
-	if (pHomeInfo == nullptr)
+	pStartPosition = g_pMain->m_StartPositionArray.GetData(GetZoneID() <= ZONE_ELMORAD ? GetZoneID() : GetNation());
+	if (pStartPosition == nullptr)
 		return;
 
 	UserInOut(INOUT_OUT);
@@ -129,13 +129,13 @@ void CUser::Regene(uint8 regene_type, uint32 magicid /*= 0*/)
 			// enter this zone at a war's invasion stage.
 			if (GetNation() == KARUS) 
 			{
-				x = (float)(pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX));
-				z = (float)(pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ));			
+				x = (float)(pStartPosition->sKarusX + myrand(0, pStartPosition->bRangeX));
+				z = (float)(pStartPosition->sKarusZ + myrand(0, pStartPosition->bRangeZ));
 			}
 			else 
 			{
-				x = (float)(pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX));
-				z = (float)(pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ));
+				x = (float)(pStartPosition->sElmoradX + myrand(0, pStartPosition->bRangeX));
+				z = (float)(pStartPosition->sElmoradZ + myrand(0, pStartPosition->bRangeZ));
 			}		
 		}
 		else
@@ -144,8 +144,8 @@ void CUser::Regene(uint8 regene_type, uint32 magicid /*= 0*/)
 			if (GetZoneID() != ZONE_SNOW_BATTLE 
 				&& GetZoneID() == (ZONE_BATTLE_BASE + g_pMain->m_byBattleZone))
 			{
-				x = (float)(pHomeInfo->BattleZoneX + myrand(0, pHomeInfo->BattleZoneLX));
-				z = (float)(pHomeInfo->BattleZoneZ + myrand(0, pHomeInfo->BattleZoneLZ));
+				x = (float)((GetNation() == KARUS ? pStartPosition->sKarusX :  pStartPosition->sElmoradX) + myrand(0, pStartPosition->bRangeX));
+				z = (float)((GetNation() == KARUS ? pStartPosition->sKarusZ :  pStartPosition->sElmoradZ) + myrand(0, pStartPosition->bRangeZ));
 			}
 			// If we died in the Moradon arena, we need to spawn near the Arena.
 			else if (GetZoneID() == ZONE_MORADON && isInArena())
@@ -158,7 +158,6 @@ void CUser::Regene(uint8 regene_type, uint32 magicid /*= 0*/)
 			{
 				short sx, sz;
 				GetStartPosition(sx, sz);
-
 				x = sx;
 				z = sz;
 			}

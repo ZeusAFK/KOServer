@@ -34,8 +34,11 @@ int main()
 	// Start up server
 	if (g_pMain->Startup())
 	{
-		printf("\nServer started up successfully!\n");
+		// Reset Battle Zone Variables.
+		g_pMain->ResetBattleZone();
 
+		printf("\nServer started up successfully!\n");
+		
 		// Wait until console's signaled as closing
 		s_hEvent.Wait();
 	}
