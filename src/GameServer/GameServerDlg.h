@@ -55,7 +55,6 @@ public:
 	void CleanupUserRankings();
 	bool LoadKnightsCapeTable();
 	bool LoadKnightsRankTable(bool bWarTime = false);
-	bool LoadHomeTable();
 	bool LoadStartPositionTable();
 	bool LoadBattleTable();
 	bool LoadKingSystem();
@@ -344,7 +343,6 @@ public:
 	UserNameRankMap				m_UserKnightsRankMap;
 	UserRankMap					m_playerRankings[2]; // one for both nations
 	FastMutex					m_userRankingsLock;
-	HomeArray					m_HomeArray;
 	StartPositionArray			m_StartPositionArray;
 	ServerResourceArray			m_ServerResourceArray;
 	QuestHelperArray			m_QuestHelperArray;

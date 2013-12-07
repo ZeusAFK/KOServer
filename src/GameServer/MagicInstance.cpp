@@ -2112,12 +2112,6 @@ bool MagicInstance::ExecuteType8()
 		uint8 bResult = 0;
 		_OBJECT_EVENT* pEvent = nullptr;
 
-		// If we're in a home zone, we'll want the coordinates from there. Otherwise, assume our own home zone.
-		_HOME_INFO* pHomeInfo = g_pMain->m_HomeArray.GetData(pTUser->GetZoneID() <= ZONE_ELMORAD ? pTUser->GetZoneID() : pTUser->GetNation());
-		_START_POSITION * pStartP = g_pMain->m_StartPositionArray.GetData(pTUser->GetZoneID());
-		if (pHomeInfo == nullptr)
-			return false;
-
 		if (pType->bWarpType != 11) 
 		{   // Warp or summon related: targets CANNOT be dead.
 			if (pTUser->isDead()
@@ -2137,63 +2131,23 @@ bool MagicInstance::ExecuteType8()
 		case 1:		// Send source to resurrection point.
 			// Send the packet to the target.
 			sData[1] = 1;
+
 			BuildAndSendSkillPacket(*itr, true, sCasterID, (*itr)->GetID(), bOpcode, nSkillID, sData); 
+
 			if (pTUser->GetMap() == nullptr)
 				continue;
 
 			pEvent = pTUser->GetMap()->GetObjectEvent(pTUser->m_sBind);
 
-			if (pEvent != nullptr)
+			if (pEvent)
 				pTUser->Warp(uint16(pEvent->fPosX * 10), uint16(pEvent->fPosZ * 10));	
-			else if (pTUser->GetZoneID() <= ELMORAD)
+			else if (pTUser->GetZoneID() <= ELMORAD || pTUser->GetMap()->isWarZone() || pTUser->GetMap()->canAttackOtherNation())
 			{
-				if (pTUser->GetNation() == KARUS)
-					pTUser->Warp(uint16((pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX)) * 10), uint16((pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ)) * 10));
+				_START_POSITION * pStartPosition = g_pMain->m_StartPositionArray.GetData(pTUser->GetZoneID());
+				if (pStartPosition)
+					pTUser->Warp((uint16)((pTUser->GetNation() == KARUS ? pStartPosition->sKarusX : pStartPosition->sElmoradX) + myrand(0, pStartPosition->bRangeX)),(uint16)((pTUser->GetNation() == KARUS ? pStartPosition->sKarusZ : pStartPosition->sElmoradZ) + myrand(0, pStartPosition->bRangeZ)));
 				else
-					pTUser->Warp(uint16((pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX)) * 10), uint16((pHomeInfo->ElmoZoneZ + + myrand(0, pHomeInfo->ElmoZoneLZ)) * 10));
-			}
-			else if (pTUser->GetMap()->isWarZone())
-			{
-				switch (pTUser->GetZoneID())
-				{
-				case ZONE_BATTLE:
-					pTUser->Warp(uint16((pHomeInfo->BattleZoneX + myrand(0, pHomeInfo->BattleZoneLX)) * 10), uint16((pHomeInfo->BattleZoneZ + myrand(0, pHomeInfo->BattleZoneLZ)) * 10));
-					break;
-				case ZONE_BATTLE2:
-					pTUser->Warp(uint16((pHomeInfo->BattleZone2X + myrand(0, pHomeInfo->BattleZone2LX)) * 10), uint16((pHomeInfo->BattleZone2Z + myrand(0, pHomeInfo->BattleZone2LZ)) * 10));
-					break;
-				case ZONE_BATTLE3:
-					pTUser->Warp(uint16((pHomeInfo->BattleZone3X + myrand(0, pHomeInfo->BattleZone3LX)) * 10), uint16((pHomeInfo->BattleZone3Z + myrand(0, pHomeInfo->BattleZone3LZ)) * 10));
-					break;
-				case ZONE_BATTLE4:
-					pTUser->Warp(uint16((pHomeInfo->BattleZone4X + myrand(0, pHomeInfo->BattleZone4LX)) * 10), uint16((pHomeInfo->BattleZone4Z + myrand(0, pHomeInfo->BattleZone4LZ)) * 10));
-					break;
-				case ZONE_BATTLE5:
-					pTUser->Warp(uint16((pHomeInfo->BattleZone5X + myrand(0, pHomeInfo->BattleZone5LX)) * 10), uint16((pHomeInfo->BattleZone5Z + myrand(0, pHomeInfo->BattleZone5LZ)) * 10));
-					break;
-				case ZONE_BATTLE6:
-					pTUser->Warp(uint16((pHomeInfo->BattleZone6X + myrand(0, pHomeInfo->BattleZone6LX)) * 10), uint16((pHomeInfo->BattleZone6Z + myrand(0, pHomeInfo->BattleZone6LZ)) * 10));
-					break;
-				}
-			}
-			else if (pTUser->GetMap()->canAttackOtherNation())
-			{
-				switch (pTUser->GetZoneID())
-				{
-				case ZONE_RONARK_LAND:
-					pTUser->Warp(uint16((pHomeInfo->FreeZoneX + myrand(0, pHomeInfo->FreeZoneLX)) * 10), uint16((pHomeInfo->FreeZoneZ + myrand(0, pHomeInfo->FreeZoneLZ)) * 10));
-					break;
-				case ZONE_RONARK_LAND_BASE:
-					if (pTUser->GetNation() == ELMORAD)
-						pTUser->Warp(uint16((pStartP->sElmoradX + myrand(0, pStartP->bRangeX)) * 10), uint16((pStartP->sElmoradZ + myrand(0, pStartP->bRangeZ)) * 10));
-					else
-						pTUser->Warp(uint16((pStartP->sKarusX + myrand(0, pStartP->bRangeX)) * 10), uint16((pStartP->sKarusZ + myrand(0, pStartP->bRangeZ)) * 10));
-				case ZONE_ARDREAM:
-					if (pTUser->GetNation() == ELMORAD)
-						pTUser->Warp(uint16((pStartP->sElmoradX + myrand(0, pStartP->bRangeX)) * 10), uint16((pStartP->sElmoradZ + myrand(0, pStartP->bRangeZ)) * 10));
-					else
-						pTUser->Warp(uint16((pStartP->sKarusX + myrand(0, pStartP->bRangeX)) * 10), uint16((pStartP->sKarusZ + myrand(0, pStartP->bRangeZ)) * 10));
-				}
+					return false;
 			}
 			else
 				pTUser->Warp(uint16(pTUser->GetMap()->m_fInitX * 10), uint16(pTUser->GetMap()->m_fInitZ * 10));

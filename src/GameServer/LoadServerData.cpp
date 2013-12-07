@@ -37,7 +37,6 @@
 #include "../shared/database/KnightsCapeSet.h"
 #include "../shared/database/UserPersonalRankSet.h"
 #include "../shared/database/UserKnightsRankSet.h"
-#include "../shared/database/HomeSet.h"
 #include "../shared/database/StartPositionSet.h"
 #include "../shared/database/BattleSet.h"
 #include "../shared/database/RentalItemSet.h"
@@ -281,11 +280,6 @@ bool CGameServerDlg::LoadKnightsRankTable(bool bWarTime /*= false*/)
 	}
 
 	return true;
-}
-
-bool CGameServerDlg::LoadHomeTable()
-{
-	LOAD_TABLE(CHomeSet, g_DBAgent.m_GameDB, &m_HomeArray, false);
 }
 
 bool CGameServerDlg::LoadStartPositionTable()

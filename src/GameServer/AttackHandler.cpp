@@ -106,7 +106,7 @@ void CUser::Regene(uint8 regene_type, uint32 magicid /*= 0*/)
 	}
 
 	// If we're in a home zone, we'll want the coordinates from there. Otherwise, assume our own home zone.
-	pStartPosition = g_pMain->m_StartPositionArray.GetData(GetZoneID() <= ZONE_ELMORAD ? GetZoneID() : GetNation());
+	pStartPosition = g_pMain->m_StartPositionArray.GetData(GetZoneID());
 	if (pStartPosition == nullptr)
 		return;
 
@@ -118,37 +118,23 @@ void CUser::Regene(uint8 regene_type, uint32 magicid /*= 0*/)
 	if (magicid == 0) 
 	{
 		// Resurrect at a bind/respawn point
-		if (pEvent != nullptr && pEvent->byLife == 1)
+		if (pEvent && pEvent->byLife == 1)
 		{
 			SetPosition(pEvent->fPosX + x, 0.0f, pEvent->fPosZ + z);
 		}
 		// Are we trying to respawn in a home zone?
-		else if (GetZoneID() <= ZONE_ELMORAD) 
+		// If we're in a war zone (aside from snow wars, which apparently use different coords), use BattleZone coordinates.
+		else if ((GetZoneID() <= ZONE_ELMORAD) || (GetZoneID() != ZONE_SNOW_BATTLE && GetZoneID() == (ZONE_BATTLE_BASE + g_pMain->m_byBattleZone))) 
 		{
 			// Use the proper respawn area for our nation, as the opposite nation can
 			// enter this zone at a war's invasion stage.
-			if (GetNation() == KARUS) 
-			{
-				x = (float)(pStartPosition->sKarusX + myrand(0, pStartPosition->bRangeX));
-				z = (float)(pStartPosition->sKarusZ + myrand(0, pStartPosition->bRangeZ));
-			}
-			else 
-			{
-				x = (float)(pStartPosition->sElmoradX + myrand(0, pStartPosition->bRangeX));
-				z = (float)(pStartPosition->sElmoradZ + myrand(0, pStartPosition->bRangeZ));
-			}		
+			x = (float)((GetNation() == KARUS ? pStartPosition->sKarusX :  pStartPosition->sElmoradX) + myrand(0, pStartPosition->bRangeX));
+			z = (float)((GetNation() == KARUS ? pStartPosition->sKarusZ :  pStartPosition->sElmoradZ) + myrand(0, pStartPosition->bRangeZ));
 		}
 		else
 		{
 			// If we're in a war zone (aside from snow wars, which apparently use different coords), use BattleZone coordinates.
-			if (GetZoneID() != ZONE_SNOW_BATTLE 
-				&& GetZoneID() == (ZONE_BATTLE_BASE + g_pMain->m_byBattleZone))
-			{
-				x = (float)((GetNation() == KARUS ? pStartPosition->sKarusX :  pStartPosition->sElmoradX) + myrand(0, pStartPosition->bRangeX));
-				z = (float)((GetNation() == KARUS ? pStartPosition->sKarusZ :  pStartPosition->sElmoradZ) + myrand(0, pStartPosition->bRangeZ));
-			}
-			// If we died in the Moradon arena, we need to spawn near the Arena.
-			else if (GetZoneID() == ZONE_MORADON && isInArena())
+			if (GetZoneID() == ZONE_MORADON && isInArena())
 			{
 				x = (float)(MINI_ARENA_RESPAWN_X + myrand(-MINI_ARENA_RESPAWN_RADIUS, MINI_ARENA_RESPAWN_RADIUS));
 				z = (float)(MINI_ARENA_RESPAWN_Z + myrand(-MINI_ARENA_RESPAWN_RADIUS, MINI_ARENA_RESPAWN_RADIUS));

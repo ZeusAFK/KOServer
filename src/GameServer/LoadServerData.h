@@ -33,7 +33,6 @@ typedef CSTLMap <_KNIGHTS_RATING>			KnightsRatingArray;
 typedef CSTLMap <_KNIGHTS_ALLIANCE>			KnightsAllianceArray;
 typedef CSTLMap <_ZONE_SERVERINFO>			ServerArray;
 typedef CSTLMap <_KNIGHTS_CAPE>				KnightsCapeArray;
-typedef CSTLMap <_HOME_INFO>				HomeArray;
 typedef CSTLMap <_START_POSITION>			StartPositionArray;
 typedef	CSTLMap	<_SERVER_RESOURCE>			ServerResourceArray;
 typedef	CSTLMap	<_QUEST_HELPER>				QuestHelperArray;

@@ -4243,21 +4243,15 @@ void CUser::KickOutZoneUser(bool home, uint8 nZoneID)
 
 void CUser::NativeZoneReturn()
 {
-	_HOME_INFO* pHomeInfo = nullptr;	// Send user back home in case it was the battlezone.
-	pHomeInfo = g_pMain->m_HomeArray.GetData(m_bNation);
-	if (pHomeInfo == nullptr) 
+	_START_POSITION *pStartPosition = nullptr;
+	pStartPosition = g_pMain->m_StartPositionArray.GetData(m_bNation);
+	if (pStartPosition == nullptr) 
 		return; 
 
 	m_bZone = m_bNation;
 
-	if (m_bNation == KARUS) {
-		m_curx = (float)(pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX));
-		m_curz = (float)(pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ)); 
-	}
-	else {
-		m_curx = (float)(pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX));
-		m_curz = (float)(pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ)); 
-	}
+	m_curx = (float)((m_bNation == KARUS ? pStartPosition->sKarusX : pStartPosition->sElmoradX) + myrand(0, pStartPosition->bRangeX));
+	m_curz = (float)((m_bNation == KARUS ? pStartPosition->sKarusZ : pStartPosition->sElmoradZ) + myrand(0, pStartPosition->bRangeZ)); 
 }
 
 /**

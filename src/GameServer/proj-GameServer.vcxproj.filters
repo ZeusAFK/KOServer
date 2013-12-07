@@ -215,9 +215,6 @@
     <ClInclude Include="..\shared\database\EventSet.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\database\HomeSet.h">
-      <Filter>Database</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\database\ItemTableSet.h">
       <Filter>Database</Filter>
     </ClInclude>
