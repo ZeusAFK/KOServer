@@ -156,7 +156,7 @@ bool C3DMap::CheckEvent(float x, float z, CUser* pUser)
 			return false;
 		}
 
-		if (g_pMain->m_byBattleZoneType == ZONE_ARDREAM && (pUser->GetLevel() < MIN_LEVEL_NIEDS_TRIANGLE || pUser->GetLevel() > MAX_LEVEL_NIEDS_TRIANGLE) || !pUser->CanLevelQualify(MAX_LEVEL_NIEDS_TRIANGLE))
+		if (g_pMain->m_byBattleZoneType == ZONE_ARDREAM && (pUser->GetLevel() < MIN_LEVEL_NIEDS_TRIANGLE || pUser->GetLevel() > MAX_LEVEL_NIEDS_TRIANGLE || !pUser->CanLevelQualify(MAX_LEVEL_NIEDS_TRIANGLE)))
 			return false;
 	}
 
