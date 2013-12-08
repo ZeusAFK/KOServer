@@ -1,5 +1,5 @@
 /*
-** $Id: llimits.h,v 1.103 2013/02/20 14:08:56 roberto Exp $
+** $Id: llimits.h,v 1.103.1.1 2013/04/12 18:48:47 roberto Exp $
 ** Limits, basic types, and some other `installation-dependent' definitions
 ** See Copyright Notice in lua.h
 */
@@ -206,18 +206,18 @@ typedef lu_int32 Instruction;
 #define lua_number2int(i,n)  __asm {__asm fld n   __asm fistp i}
 #define lua_number2integer(i,n)		lua_number2int(i, n)
 #define lua_number2unsigned(i,n)  \
-{__int64 l; __asm {__asm fld n   __asm fistp l} i = (unsigned int)l;}
+  {__int64 l; __asm {__asm fld n   __asm fistp l} i = (unsigned int)l;}
 
 
 #elif defined(LUA_IEEE754TRICK)		/* }{ */
 /* the next trick should work on any machine using IEEE754 with
-a 32-bit int type */
+   a 32-bit int type */
 
 union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 
 #if !defined(LUA_IEEEENDIAN)	/* { */
 #define LUAI_EXTRAIEEE	\
-	static const union luai_Cast ieeeendian = {-(33.0 + 6755399441055744.0)};
+  static const union luai_Cast ieeeendian = {-(33.0 + 6755399441055744.0)};
 #define LUA_IEEEENDIANLOC	(ieeeendian.l_p[1] == 33)
 #else
 #define LUA_IEEEENDIANLOC	LUA_IEEEENDIAN
@@ -225,13 +225,13 @@ union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 #endif				/* } */
 
 #define lua_number2int32(i,n,t) \
-{ LUAI_EXTRAIEEE \
-	volatile union luai_Cast u; u.l_d = (n) + 6755399441055744.0; \
-	(i) = (t)u.l_p[LUA_IEEEENDIANLOC]; }
+  { LUAI_EXTRAIEEE \
+    volatile union luai_Cast u; u.l_d = (n) + 6755399441055744.0; \
+    (i) = (t)u.l_p[LUA_IEEEENDIANLOC]; }
 
 #define luai_hashnum(i,n)  \
-{ volatile union luai_Cast u; u.l_d = (n) + 1.0;  /* avoid -0 */ \
-	(i) = u.l_p[0]; (i) += u.l_p[1]; }  /* add double bits for his hash */
+  { volatile union luai_Cast u; u.l_d = (n) + 1.0;  /* avoid -0 */ \
+    (i) = u.l_p[0]; (i) += u.l_p[1]; }  /* add double bits for his hash */
 
 #define lua_number2int(i,n)		lua_number2int32(i, n, int)
 #define lua_number2unsigned(i,n)	lua_number2int32(i, n, lua_Unsigned)
@@ -269,9 +269,9 @@ union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 
 #if !defined(lua_unsigned2number)
 /* on several machines, coercion from unsigned to double is slow,
-so it may be worth to avoid */
+   so it may be worth to avoid */
 #define lua_unsigned2number(u)  \
-	(((u) <= (lua_Unsigned)INT_MAX) ? (lua_Number)(int)(u) : (lua_Number)(u))
+    (((u) <= (lua_Unsigned)INT_MAX) ? (lua_Number)(int)(u) : (lua_Number)(u))
 #endif
 
 
@@ -282,8 +282,8 @@ so it may be worth to avoid */
 #include <math.h>
 
 #define luai_hashnum(i,n) { int e;  \
-	n = l_mathop(frexp)(n, &e) * (lua_Number)(INT_MAX - DBL_MAX_EXP);  \
-	lua_number2int(i, n); i += e; }
+  n = l_mathop(frexp)(n, &e) * (lua_Number)(INT_MAX - DBL_MAX_EXP);  \
+  lua_number2int(i, n); i += e; }
 
 #endif
 

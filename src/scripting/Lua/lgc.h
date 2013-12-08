@@ -1,5 +1,5 @@
 /*
-** $Id: lgc.h,v 2.58 2012/09/11 12:53:08 roberto Exp $
+** $Id: lgc.h,v 2.58.1.1 2013/04/12 18:48:47 roberto Exp $
 ** Garbage Collector
 ** See Copyright Notice in lua.h
 */
@@ -66,8 +66,8 @@
 ** 'propagate', so 'keepinvariant' is always true.
 */
 #define keepinvariantout(g)  \
-	check_exp(g->gcstate == GCSpropagate || !isgenerational(g),  \
-	g->gcstate <= GCSatomic)
+  check_exp(g->gcstate == GCSpropagate || !isgenerational(g),  \
+            g->gcstate <= GCSatomic)
 
 
 /*
@@ -104,7 +104,7 @@
 #define isold(x)	testbit((x)->gch.marked, OLDBIT)
 
 /* MOVE OLD rule: whenever an object is moved to the beginning of
-a GC list, its old bit must be cleared */
+   a GC list, its old bit must be cleared */
 #define resetoldbit(o)	resetbit((o)->gch.marked, OLDBIT)
 
 #define otherwhite(g)	(g->currentwhite ^ WHITEBITS)
@@ -132,7 +132,7 @@ a GC list, its old bit must be cleared */
 
 #define luaC_objbarrier(L,p,o)  \
 	{ if (iswhite(obj2gco(o)) && isblack(obj2gco(p))) \
-	luaC_barrier_(L,obj2gco(p),obj2gco(o)); }
+		luaC_barrier_(L,obj2gco(p),obj2gco(o)); }
 
 #define luaC_objbarrierback(L,p,o)  \
    { if (iswhite(obj2gco(o)) && isblack(obj2gco(p))) luaC_barrierback_(L,p); }
@@ -146,7 +146,7 @@ LUAI_FUNC void luaC_forcestep (lua_State *L);
 LUAI_FUNC void luaC_runtilstate (lua_State *L, int statesmask);
 LUAI_FUNC void luaC_fullgc (lua_State *L, int isemergency);
 LUAI_FUNC GCObject *luaC_newobj (lua_State *L, int tt, size_t sz,
-								 GCObject **list, int offset);
+                                 GCObject **list, int offset);
 LUAI_FUNC void luaC_barrier_ (lua_State *L, GCObject *o, GCObject *v);
 LUAI_FUNC void luaC_barrierback_ (lua_State *L, GCObject *o);
 LUAI_FUNC void luaC_barrierproto_ (lua_State *L, Proto *p, Closure *c);

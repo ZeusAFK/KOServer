@@ -1,5 +1,5 @@
 /*
-** $Id: lstring.h,v 1.49 2012/02/01 21:57:15 roberto Exp $
+** $Id: lstring.h,v 1.49.1.1 2013/04/12 18:48:47 roberto Exp $
 ** String table (keep all strings handled by Lua)
 ** See Copyright Notice in lua.h
 */
@@ -17,7 +17,7 @@
 #define sizeudata(u)	(sizeof(union Udata)+(u)->len)
 
 #define luaS_newliteral(L, s)	(luaS_newlstr(L, "" s, \
-	(sizeof(s)/sizeof(char))-1))
+                                 (sizeof(s)/sizeof(char))-1))
 
 #define luaS_fix(s)	l_setbit((s)->tsv.marked, FIXEDBIT)
 
