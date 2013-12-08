@@ -2254,7 +2254,8 @@ bool MagicInstance::ExecuteType8()
 			float dest_x, dest_z = 0.0f;
 			// If we're not even in the same zone, I can't teleport to you!
 			if (pTUser->GetZoneID() != pSkillCaster->GetZoneID()
-				|| (pSkill->bMoral < MORAL_ENEMY && pSkillCaster->isHostileTo(pTUser)))
+				|| (pSkill->bMoral < MORAL_ENEMY && pSkillCaster->isHostileTo(pTUser))
+				|| (pSkill->iNum > 500000 && pSkillCaster->GetZoneID() > ZONE_MORADON))
 				return false;
 
 			dest_x = pTUser->GetX();
