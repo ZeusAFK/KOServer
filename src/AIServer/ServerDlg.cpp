@@ -58,7 +58,7 @@ bool CServerDlg::Startup()
 
 	// Server Start
 	DateTime time;
-	printf("Server started on %02d-%02d-%04d at %02d:%02d.\n\n", time.GetDay(), time.GetMonth(), time.GetYear(), time.GetHour(), time.GetMinute());
+	printf("Server started on %04d-%02d-%02d at %02d:%02d\n\n", time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 
 	//----------------------------------------------------------------------
 	//	DB part initialize
@@ -588,7 +588,7 @@ void CServerDlg::DeleteAllUserList(CGameSocket *pSock)
 	// If a server disconnected, show it...
 	if (pSock != nullptr)
 	{
-		printf("Game Server disconnected - %s]\n", pSock->GetRemoteIP().c_str());
+		printf("Game Server disconnected - %s\n", pSock->GetRemoteIP().c_str());
 		return;
 	}
 
