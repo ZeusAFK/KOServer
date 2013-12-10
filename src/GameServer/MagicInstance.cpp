@@ -437,8 +437,7 @@ bool MagicInstance::CheckType3Prerequisites()
 
 		// It appears that the server should reject any attacks or heals
 		// on players that have transformed into monsters.
-		if ((TO_USER(pSkillTarget)->isNPCTransformation() || TO_USER(pSkillTarget)->isSiegeTransformation())
-			&& !pSkillCaster->CanAttack(pSkillTarget))
+		if (TO_USER(pSkillTarget)->isSiegeTransformation() && !pSkillCaster->CanAttack(pSkillTarget))
 			return false;
 
 		return true;
