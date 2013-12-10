@@ -178,8 +178,8 @@ enum InOutType
 #define MIN_LEVEL_JURAD_MOUNTAIN	70
 
 // Where to respawn after dying in the Moradon arenas
-#define MINI_ARENA_RESPAWN_X		735
-#define MINI_ARENA_RESPAWN_Z		426
+#define MINI_ARENA_RESPAWN_X		734
+#define MINI_ARENA_RESPAWN_Z		427
 #define MINI_ARENA_RESPAWN_RADIUS	5
 
 // Automatic Ranking Minutes
