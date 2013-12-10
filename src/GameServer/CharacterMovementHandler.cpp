@@ -232,6 +232,7 @@ bool CUser::CanChangeZone(C3DMap * pTargetMap, WarpListResponse & errorReason)
 		}
 
 		return GetNation() == KARUS; 
+
 	case ZONE_ELMORAD_ESLANT:
 		if (GetLevel() < MIN_LEVEL_ESLANT)
 		{
@@ -240,43 +241,13 @@ bool CUser::CanChangeZone(C3DMap * pTargetMap, WarpListResponse & errorReason)
 		}
 
 		return GetNation() == ELMORAD;
-	case ZONE_DELOS:
-	case ZONE_DESPERATION_ABYSS:
-	case ZONE_HELL_ABYSS:
-	case ZONE_DRAGON_CAVE:
-		if (GetLevel() < MIN_LEVEL_NATION_BASE)
-		{
-			errorReason = WarpListMinLevel;
-			return false;
-		}
 
-		if (GetLoyalty() <= 0)
-		{
-			errorReason = WarpListNeedNP;
-			return false;
-		}
-
+	case ZONE_DELOS: // TODO: implement CSW logic.
 		return true;
+
 	case ZONE_BIFROST:
-		if (g_pMain->m_byBattleOpen != NO_BATTLE)
-		{
-			errorReason = WarpListNotDuringWar;
-			return false;
-		}
-
-		if (GetLevel() < MIN_LEVEL_BIFROST)
-		{
-			errorReason = WarpListMinLevel;
-			return false;
-		}
-
-		if (GetLoyalty() <= 0)
-		{
-			errorReason = WarpListNeedNP;
-			return false;
-		}
-
 		return true;
+
 	case ZONE_ARDREAM:
 		if (g_pMain->m_byBattleOpen != NO_BATTLE)
 		{
@@ -304,6 +275,7 @@ bool CUser::CanChangeZone(C3DMap * pTargetMap, WarpListResponse & errorReason)
 		}
 
 		return true;
+
 	case ZONE_RONARK_LAND_BASE:
 		if (g_pMain->m_byBattleOpen != NO_BATTLE)
 		{
@@ -331,6 +303,7 @@ bool CUser::CanChangeZone(C3DMap * pTargetMap, WarpListResponse & errorReason)
 		}
 
 		return true;
+
 	case ZONE_RONARK_LAND:
 		if (g_pMain->m_byBattleOpen != NO_BATTLE)
 		{
@@ -347,34 +320,6 @@ bool CUser::CanChangeZone(C3DMap * pTargetMap, WarpListResponse & errorReason)
 		if (GetLoyalty() <= 0)
 		{
 			errorReason = WarpListNeedNP;
-			return false;
-		}
-
-		return true;
-	case ZONE_KROWAZ_DOMINION:
-		if (g_pMain->m_byBattleOpen != NO_BATTLE)
-		{
-			errorReason = WarpListNotDuringWar;
-			return false;
-		}
-
-		if (GetLevel() < MIN_LEVEL_KROWAZ_DOMINION)
-		{
-			errorReason = WarpListMinLevel;
-			return false;
-		}
-
-		if (GetLoyalty() <= 0)
-		{
-			errorReason = WarpListNeedNP;
-			return false;
-		}
-
-		return true;
-	case ZONE_JURAD_MOUNTAIN:
-		if (GetLevel() < MIN_LEVEL_JURAD_MOUNTAIN)
-		{
-			errorReason = WarpListMinLevel;
 			return false;
 		}
 
