@@ -1,4 +1,5 @@
 local NPC = 16084;
+local Ret = 0;
 
 if EVENT == 500 then
    SelectMsg(UID, 2, -1, 4071, NPC, 4071, 501, 4072, 502);
