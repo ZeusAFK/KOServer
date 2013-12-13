@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Map.h"
 #include "MagicInstance.h"
+#include "../shared/DateTime.h"
 
 CNpc::CNpc() : Unit(UnitNPC)
 {
@@ -376,6 +377,9 @@ void CNpc::OnDeathProcess(Unit *pKiller)
 					ChaosStoneProcess(pUser,5);
 				}
 			}
+
+			DateTime time;
+			g_pMain->WriteDeathUserLogFile(string_format("[ %s - %d:%d:%d ] Killer=%s,SID=%d,Target=%s,Zone=%d,X=%d,Z=%d\n",m_bMonster ? "MONSTER" : "NPC",time.GetHour(),time.GetMinute(),time.GetSecond(),pKiller->GetName().c_str(),m_sSid,GetName().c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ())));
 		}
 	}
 }

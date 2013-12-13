@@ -30,7 +30,7 @@
 #*.smd
 
 # Lua files
-*.lua
+#*.lua
 
 # Debug info
 *.sbr

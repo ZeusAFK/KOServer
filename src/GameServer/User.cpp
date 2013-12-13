@@ -5,6 +5,7 @@
 #include "MagicInstance.h"
 #include "DBAgent.h"
 #include <algorithm>
+#include "../shared/DateTime.h"
 
 using namespace std;
 
@@ -3256,7 +3257,7 @@ void CUser::OperatorCommand(Packet & pkt)
 	std::string strUserID;
 	uint8 opcode;
 	bool bIsOnline = false;
-	std::string sNoticeMessage;
+	std::string sNoticeMessage, sOperatorCommandType;
 	pkt >> opcode >> strUserID;
 
 	if (strUserID.empty() || strUserID.size() > MAX_ID_SIZE)
@@ -3273,24 +3274,36 @@ void CUser::OperatorCommand(Packet & pkt)
 	{
 	case OPERATOR_ARREST:
 		if (bIsOnline)
+		{
 			ZoneChange(pUser->GetZoneID(), pUser->m_curx, pUser->m_curz);
+			sOperatorCommandType = "OPERATOR_ARREST";
+		}
 		break;
 	case OPERATOR_SUMMON:
 		if (bIsOnline)
+		{
 			pUser->ZoneChange(GetZoneID(), m_curx, m_curz);
+			sOperatorCommandType = "OPERATOR_SUMMON";
+		}
 		break;
 	case OPERATOR_CUTOFF:
 		if (bIsOnline)
+		{
 			pUser->Disconnect();
+			sOperatorCommandType = "OPERATOR_CUTOFF";
+		}
 		break;
 	case OPERATOR_BAN:
 	case OPERATOR_BAN_ACCOUNT: // ban account is meant to call a proc to do so
-		if (bIsOnline)  {
+		if (bIsOnline)
+		{
 			pUser->m_bAuthority = AUTHORITY_BANNED;
 			pUser->Disconnect();
-		} else {
-			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_BANNED);
 		}
+		else 
+			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_BANNED);
+
+		sOperatorCommandType = "OPERATOR_BAN_ACCOUNT";
 		sNoticeMessage = string_format("%s is currently blocked for illegal activity.", strUserID.c_str());
 		break;
 	case OPERATOR_MUTE:
@@ -3298,6 +3311,8 @@ void CUser::OperatorCommand(Packet & pkt)
 			pUser->m_bAuthority = AUTHORITY_MUTED;
 		else
 			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_MUTED);
+
+		sOperatorCommandType = "OPERATOR_MUTE";
 		sNoticeMessage = string_format("%s is currently muted for illegal activity.", strUserID.c_str());
 		break;
 	case OPERATOR_DISABLE_ATTACK:
@@ -3305,6 +3320,7 @@ void CUser::OperatorCommand(Packet & pkt)
 			pUser->m_bAuthority = AUTHORITY_ATTACK_DISABLED;
 		else
 			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_ATTACK_DISABLED);
+		sOperatorCommandType = "OPERATOR_DISABLE_ATTACK";
 		sNoticeMessage = string_format("%s is currently disabled attack for illegal activity.", strUserID.c_str());
 		break;
 	case OPERATOR_ENABLE_ATTACK:
@@ -3312,6 +3328,7 @@ void CUser::OperatorCommand(Packet & pkt)
 			pUser->m_bAuthority = AUTHORITY_PLAYER;
 		else
 			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_PLAYER);
+		sOperatorCommandType = "OPERATOR_ENABLE_ATTACK";
 		sNoticeMessage = string_format("%s has been enabled attack.", strUserID.c_str());
 		break;
 	case OPERATOR_UNMUTE:
@@ -3319,12 +3336,19 @@ void CUser::OperatorCommand(Packet & pkt)
 			pUser->m_bAuthority = AUTHORITY_PLAYER;
 		else
 			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_PLAYER);
+		sOperatorCommandType = "OPERATOR_UNMUTE";
 		sNoticeMessage = string_format("%s has been unmuted.", strUserID.c_str());
 		break;
 	}
 
 	if (!sNoticeMessage.empty())
 		g_pMain->SendNotice(sNoticeMessage.c_str(),Nation::ALL);
+
+	if (!sOperatorCommandType.empty())
+	{
+		DateTime time;
+		g_pMain->WriteChatLogFile(string_format("[ GAME MASTER - %d:%d:%d ] %s : %s %s ( Zone=%d, X=%d, Z=%d )\n",time.GetHour(),time.GetMinute(),time.GetSecond(),GetName().c_str(),sOperatorCommandType.c_str(),strUserID.c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ())));
+	}
 }
 
 void CUser::SpeedHackTime(Packet & pkt)
@@ -4299,6 +4323,8 @@ void CUser::OnDeath(Unit *pKiller)
 	InitType3();
 	InitType4();
 
+	DateTime time;
+
 	if (pKiller != nullptr)
 	{
 		DeathNoticeType noticeType = DeathNoticeNone;
@@ -4319,7 +4345,8 @@ void CUser::OnDeath(Unit *pKiller)
 			if (m_bPremiumType != 0)
 				nExpLost = nExpLost * (GetPremiumProperty(PremiumExpRestorePercent)) / 100;
 
-			ExpChange(-nExpLost);
+			g_pMain->WriteDeathUserLogFile(string_format("[ NPC/MONSTER - %d:%d:%d ] SID=%d,Killer=%s,Target=%s,Zone=%d,X=%d,Z=%d,TargetExp=%d,LostExp=%d\n",time.GetHour(),time.GetMinute(),time.GetSecond(),pNpc->m_sSid,pKiller->GetName().c_str(),GetName().c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ()),m_iExp, nExpLost));
+			ExpChange(-nExpLost);			
 		}
 		else
 		{
@@ -4416,6 +4443,50 @@ void CUser::OnDeath(Unit *pKiller)
 
 				m_sWhoKilledMe = pUser->GetID();
 			}
+
+			string pKillerPartyUsers;
+			string pTargetPartyUsers;
+
+			if (pUser->isInParty() || isInParty())
+			{
+				CUser *pPartyUser;
+				_PARTY_GROUP *pParty = g_pMain->GetPartyPtr(pUser->GetPartyID());
+				if (pParty)
+				{
+					for (int i = 0; i < MAX_PARTY_USERS; i++)
+					{
+						pPartyUser = g_pMain->GetUserPtr(pParty->uid[i]);
+						if (pPartyUser)
+							pKillerPartyUsers += string_format("%s,",pPartyUser->GetName().c_str());
+					}
+				}
+
+				pParty = g_pMain->GetPartyPtr(GetPartyID());
+				if (pParty)
+				{
+					for (int i = 0; i < MAX_PARTY_USERS; i++)
+					{
+						pPartyUser = g_pMain->GetUserPtr(pParty->uid[i]);
+						if (pPartyUser)
+							pTargetPartyUsers += string_format("%s,",pPartyUser->GetName().c_str());
+					}
+				}
+
+				if (pKillerPartyUsers.empty())
+					pTargetPartyUsers = "NO PARTY";
+				else
+					pKillerPartyUsers = pKillerPartyUsers.substr(0,pKillerPartyUsers.length() - 1);
+
+				if (pTargetPartyUsers.empty())
+					pTargetPartyUsers = "NO PARTY";
+				else
+					pTargetPartyUsers = pTargetPartyUsers.substr(0,pTargetPartyUsers.length() - 1);
+			}
+
+			if (pKillerPartyUsers.empty() && pTargetPartyUsers.empty())
+				g_pMain->WriteDeathUserLogFile(string_format("[ USER - %d:%d:%d ] Killer=%s,Target=%s,Zone=%d,X=%d,Z=%d,LoyaltyKiller=%d,LoyaltyMonthlyKiller=%d,LoyaltyTarget=%d,LoyaltyMonthlyTarget=%d\n",time.GetHour(),time.GetMinute(),time.GetSecond(),pKiller->GetName().c_str(),GetName().c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ()),TO_USER(pKiller)->GetLoyalty(),TO_USER(pKiller)->GetMonthlyLoyalty(),GetLoyalty(),GetMonthlyLoyalty()));
+			else
+				g_pMain->WriteDeathUserLogFile(string_format("[ USER - %d:%d:%d ] Killer=%s,KillerParty=%s,Target=%s,TargetParty=%s,Zone=%d,X=%d,Z=%d,LoyaltyKiller=%d,LoyaltyMonthlyKiller=%d,LoyaltyTarget=%d,LoyaltyMonthlyTarget=%d\n",time.GetHour(),time.GetMinute(),time.GetSecond(),pKiller->GetName().c_str(),pKillerPartyUsers.c_str(),GetName().c_str(), pTargetPartyUsers.c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ()),TO_USER(pKiller)->GetLoyalty(),TO_USER(pKiller)->GetMonthlyLoyalty(),GetLoyalty(),GetMonthlyLoyalty()));
 		}
 
 		if (noticeType != DeathNoticeNone)

@@ -68,6 +68,8 @@ CGameServerDlg::CGameServerDlg()
 */
 bool CGameServerDlg::Startup()
 {
+	DateTime time;
+
 	m_sZoneCount = 0;
 	m_sErrorSocketCount = 0;
 
@@ -138,6 +140,31 @@ bool CGameServerDlg::Startup()
 	// Clear any remaining users in the currently logged in list
 	// that may be left as a result of an improper shutdown.
 	g_DBAgent.ClearRemainUsers();
+
+	// Logs Start
+	CreateDirectory("Logs",NULL);
+
+	m_fpDeathUser = fopen(string_format("./Logs/DeathUser_%d_%d_%d.log",time.GetDay(),time.GetMonth(),time.GetYear()).c_str(), "a");
+	if (m_fpDeathUser == nullptr)
+	{
+		printf("ERROR: Unable to open death user log file.\n");
+		return false;
+	}
+
+	m_fpDeathNpc = fopen(string_format("./Logs/DeathNpc_%d_%d_%d.log",time.GetDay(),time.GetMonth(),time.GetYear()).c_str(), "a");
+	if (m_fpDeathNpc == nullptr)
+	{
+		printf("ERROR: Unable to open death npc log file.\n");
+		return false;
+	}
+
+	m_fpChat = fopen(string_format("./Logs/Chat_%d_%d_%d.log",time.GetDay(),time.GetMonth(),time.GetYear()).c_str(), "a");
+	if (m_fpChat == nullptr)
+	{
+		printf("ERROR: Unable to open chat log file.\n");
+		return false;
+	}
+	// Logs End
 
 	LoadNoticeData();
 
@@ -2755,4 +2782,22 @@ void CGameServerDlg::ShowNpcEffect(uint16 sNpcID, uint32 nEffectID, uint8 ZoneID
 	Packet result(WIZ_OBJECT_EVENT, uint8(OBJECT_NPC));
 	result << uint8(3) << sNpcID << nEffectID;
 	g_pMain->Send_Zone(&result, ZoneID);
+}
+
+void CGameServerDlg::WriteDeathUserLogFile(string & logMessage)
+{
+	fwrite(logMessage.c_str(), logMessage.length(), 1, m_fpDeathUser);
+	fflush(m_fpDeathUser);
+}
+
+void CGameServerDlg::WriteDeathNpcLogFile(string & logMessage)
+{
+	fwrite(logMessage.c_str(), logMessage.length(), 1, m_fpDeathNpc);
+	fflush(m_fpDeathNpc);
+}
+
+void CGameServerDlg::WriteChatLogFile(string & logMessage)
+{
+	fwrite(logMessage.c_str(), logMessage.length(), 1, m_fpChat);
+	fflush(m_fpChat);
 }

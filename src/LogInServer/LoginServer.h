@@ -48,9 +48,12 @@ private:
 	Packet m_serverListPacket;
 	FastMutex m_lock, m_serverListLock;
 
-	FILE *m_fp;
+	FILE *m_fpLoginServer;
 public:
 	CDBProcess	m_DBProcess;
+	void WriteUserLogFile(std::string & logMessage);
+
+	FILE *m_fpUser;
 };
 
 extern LoginServer * g_pMain;

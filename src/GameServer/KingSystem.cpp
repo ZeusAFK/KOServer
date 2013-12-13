@@ -1293,6 +1293,8 @@ void CKingSystem::KingSpecialEvent(CUser * pUser, Packet & pkt)
 			result.SByte();
 			result << int16(1) << strMessage;
 			g_pMain->Send_All(&result, nullptr, m_byNation);
+			DateTime time;
+			g_pMain->WriteChatLogFile(string_format("[ KING - %d:%d:%d ] %s : %s ( Zone=%d, X=%d, Z=%d )\n",time.GetHour(),time.GetMinute(),time.GetSecond(),pUser->GetName().c_str(),strMessage.c_str(),pUser->GetZoneID(),uint16(pUser->GetX()),uint16(pUser->GetZ())));
 		} break;
 	}
 }

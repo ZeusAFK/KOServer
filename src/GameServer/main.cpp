@@ -38,7 +38,7 @@ int main()
 		g_pMain->ResetBattleZone();
 
 		printf("\nServer started up successfully!\n");
-		
+
 		// Wait until console's signaled as closing
 		s_hEvent.Wait();
 	}
@@ -50,6 +50,15 @@ int main()
 	}
 
 	printf("Server shutting down, please wait...\n");
+
+	if (g_pMain->m_fpDeathUser != nullptr)
+		fclose(g_pMain->m_fpDeathUser);
+
+	if (g_pMain->m_fpDeathNpc != nullptr)
+		fclose(g_pMain->m_fpDeathNpc);
+
+	if (g_pMain->m_fpChat != nullptr)
+		fclose(g_pMain->m_fpChat);
 
 	// This seems redundant, but it's not. 
 	// We still have the destructor for the dialog instance, which allows time for threads to properly cleanup.

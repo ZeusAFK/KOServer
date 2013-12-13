@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include <sstream>
 #include "../shared/Ini.h"
+#include "../shared/DateTime.h"
 
 extern bool g_bRunning;
 std::vector<Thread *> g_timerThreads;
 
-LoginServer::LoginServer() : m_sLastVersion(__VERSION), m_fp(nullptr)
+LoginServer::LoginServer() : m_sLastVersion(__VERSION), m_fpLoginServer(nullptr)
 {
 }
 
@@ -13,10 +14,21 @@ bool LoginServer::Startup()
 {
 	GetInfoFromIni();
 
-	m_fp = fopen("./Login.log", "a");
-	if (m_fp == nullptr)
+	DateTime time;
+
+	CreateDirectory("Logs",NULL);
+
+	m_fpLoginServer = fopen("./Logs/LoginServer.log", "a");
+	if (m_fpLoginServer == nullptr)
 	{
 		printf("ERROR: Unable to open log file.\n");
+		return false;
+	}
+
+	m_fpUser = fopen(string_format("./Logs/Login_%d_%d_%d.log",time.GetDay(),time.GetMonth(),time.GetYear()).c_str(), "a");
+	if (m_fpUser == nullptr)
+	{
+		printf("ERROR: Unable to open user log file.\n");
 		return false;
 	}
 
@@ -208,8 +220,15 @@ void LoginServer::GetInfoFromIni()
 void LoginServer::WriteLogFile(string & logMessage)
 {
 	FastGuard lock(m_lock);
-	fwrite(logMessage.c_str(), logMessage.length(), 1, m_fp);
-	fflush(m_fp);
+	fwrite(logMessage.c_str(), logMessage.length(), 1, m_fpLoginServer);
+	fflush(m_fpLoginServer);
+}
+
+void LoginServer::WriteUserLogFile(string & logMessage)
+{
+	FastGuard lock(m_lock);
+	fwrite(logMessage.c_str(), logMessage.length(), 1, m_fpUser);
+	fflush(m_fpUser);
 }
 
 void LoginServer::ReportSQLError(OdbcError *pError)
@@ -244,8 +263,11 @@ LoginServer::~LoginServer()
 		delete itr->second;
 	m_VersionList.clear();
 
-	if (m_fp != nullptr)
-		fclose(m_fp);
+	if (m_fpLoginServer != nullptr)
+		fclose(m_fpLoginServer);
+
+	if (m_fpUser != nullptr)
+		fclose(m_fpUser);
 
 	printf("Shutting down socket system...");
 	m_socketMgr.Shutdown();

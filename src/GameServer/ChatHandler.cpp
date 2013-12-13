@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "DBAgent.h"
+#include "../shared/DateTime.h"
 
 using std::string;
 
@@ -90,7 +91,10 @@ void CUser::Chat(Packet & pkt)
 	Packet result;
 	uint16 sessID;
 	uint8 type = pkt.read<uint8>(), bOutType = type, seekingPartyOptions, bNation;
-	string chatstr, finalstr, strSender, * strMessage;
+	string chatstr, finalstr, strSender, * strMessage, chattype;
+	CUser *pUser;
+	CKnights * pKnights;
+	DateTime time;
 
 	bool isAnnouncement = false;
 
@@ -103,7 +107,11 @@ void CUser::Chat(Packet & pkt)
 
 	// Process GM commands
 	if (isGM() && ProcessChatCommand(chatstr))
+	{
+		chattype = "GAME MASTER";
+		g_pMain->WriteChatLogFile(string_format("[ %s - %d:%d:%d ] %s : %s ( Zone=%d, X=%d, Z=%d )\n",chattype.c_str(),time.GetHour(),time.GetMinute(),time.GetSecond(),GetName().c_str(),chatstr.c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ())));
 		return;
+	}
 
 	if (type == SEEKING_PARTY_CHAT)
 		pkt >> seekingPartyOptions;
@@ -153,28 +161,33 @@ void CUser::Chat(Packet & pkt)
 	{
 	case GENERAL_CHAT:
 		g_pMain->Send_NearRegion(&result, GetMap(), GetRegionX(), GetRegionZ(), GetX(), GetZ());
+		chattype = "GENERAL_CHAT";
 		break;
 
 	case PRIVATE_CHAT:
 		{
-			// TODO : Kontrol Edilecek.
-			CUser *pUser = g_pMain->GetUserPtr(m_sPrivateChatUser);
+			pUser = g_pMain->GetUserPtr(m_sPrivateChatUser);
 			if (pUser == nullptr || !pUser->isInGame()) 
 				return;
+
+			chattype = "PRIVATE_CHAT";
 		}
 	case COMMAND_PM_CHAT:
 		{
 			if (type == COMMAND_PM_CHAT && GetFame() != COMMAND_CAPTAIN)
 				return;
 
-			CUser *pUser = g_pMain->GetUserPtr(m_sPrivateChatUser);
+			pUser = g_pMain->GetUserPtr(m_sPrivateChatUser);
 			if (pUser != nullptr) 
 				pUser->Send(&result);
 		} break;
 
 	case PARTY_CHAT:
 		if (isInParty())
+		{
 			g_pMain->Send_PartyMember(GetPartyID(), &result);
+			chattype = "PARTY_CHAT";
+		}
 		break;
 
 	case SHOUT_CHAT:
@@ -189,17 +202,22 @@ void CUser::Chat(Packet & pkt)
 
 		MSpChange(-(m_iMaxMp / 5));
 		SendToRegion(&result);
+		chattype = "SHOUT_CHAT";
 		break;
 
 	case KNIGHTS_CHAT:
 		if (isInClan())
+		{
+			pKnights = g_pMain->GetClanPtr(GetClanID());
 			g_pMain->Send_KnightsMember(GetClanID(), &result);
+			chattype = "KNIGHTS_CHAT";
+		}
 		break;
 	case CLAN_NOTICE:
 		if (isInClan() 
 			&& isClanLeader())
 		{
-			CKnights * pKnights = g_pMain->GetClanPtr(GetClanID());
+			pKnights = g_pMain->GetClanPtr(GetClanID());
 			if (pKnights == nullptr)
 				return;
 
@@ -213,7 +231,10 @@ void CUser::Chat(Packet & pkt)
 		break;
 	case COMMAND_CHAT:
 		if (GetFame() == COMMAND_CAPTAIN)
+		{
 			g_pMain->Send_CommandChat(&result, m_bNation, this);
+			chattype = "COMMAND_CHAT";
+		}
 		break;
 	case MERCHANT_CHAT:
 		if (isMerchanting())
@@ -222,9 +243,10 @@ void CUser::Chat(Packet & pkt)
 	case ALLIANCE_CHAT:
 		if (isInClan())
 		{
-			CKnights *pKnights = g_pMain->GetClanPtr(GetClanID());
+			pKnights = g_pMain->GetClanPtr(GetClanID());
 			if (pKnights != nullptr && pKnights->isInAlliance())
 				g_pMain->Send_KnightsAlliance(pKnights->GetAllianceID(), &result);
+			chattype = "ALLIANCE_CHAT";
 		}
 		break;
 	case WAR_SYSTEM_CHAT:
@@ -238,6 +260,16 @@ void CUser::Chat(Packet & pkt)
 			g_pMain->Send_Zone_Matched_Class(&result, GetZoneID(), this, GetNation(), seekingPartyOptions);
 		}
 		break;
+	}
+
+	if (!chattype.empty())
+	{
+		if (pUser && type == 2)
+			g_pMain->WriteChatLogFile(string_format("[ %s - %d:%d:%d ] %s > %s : %s ( Zone=%d, X=%d, Z=%d )\n",chattype.c_str(),time.GetHour(),time.GetMinute(),time.GetSecond(),strSender.c_str(),pUser->GetName().c_str(),chatstr.c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ())));
+		else if (pKnights && (type == 6 || type == 15))
+			g_pMain->WriteChatLogFile(string_format("[ %s - %d:%d:%d ] %s > %s : %s ( Zone=%d, X=%d, Z=%d )\n",chattype.c_str(),time.GetHour(),time.GetMinute(),time.GetSecond(),strSender.c_str(),pKnights->GetName().c_str(),chatstr.c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ())));
+		else
+			g_pMain->WriteChatLogFile(string_format("[ %s - %d:%d:%d ] %s : %s ( Zone=%d, X=%d, Z=%d )\n",chattype.c_str(),time.GetHour(),time.GetMinute(),time.GetSecond(),strSender.c_str(),chatstr.c_str(),GetZoneID(),uint16(GetX()),uint16(GetZ())));
 	}
 }
 

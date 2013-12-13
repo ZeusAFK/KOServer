@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../shared/DateTime.h"
 
 LSPacketHandler PacketHandlers[NUM_LS_OPCODES];
 void InitPacketHandlers(void)
@@ -76,6 +77,7 @@ void LoginSession::HandleLogin(Packet & pkt)
 	Packet result(pkt.GetOpcode());
 	uint16 resultCode = 0;
 	string account, password;
+	DateTime time;
 
 	pkt >> account >> password;
 	if (account.size() == 0 || account.size() > MAX_ID_SIZE 
@@ -114,7 +116,7 @@ void LoginSession::HandleLogin(Packet & pkt)
 		break;
 	}
 
-	printf(string_format("Login : %s / PW : %s / Authentication : %s\n",account.c_str(),password.c_str(),sAuthMessage.c_str()).c_str());
+	printf(string_format("[ LOGIN - %d:%d:%d ] ID=%s, PW=%s, Authentication=%s\n",time.GetHour(),time.GetMinute(),time.GetSecond(),account.c_str(),password.c_str(),sAuthMessage.c_str()).c_str());
 
 	result << uint8(resultCode);
 	if (resultCode == AUTH_SUCCESS)
@@ -124,14 +126,11 @@ void LoginSession::HandleLogin(Packet & pkt)
 	}
 	else if (resultCode == AUTH_IN_GAME)
 	{
-		/*
-		SessionMap & sessMap = g_pMain->m_socketMgr.GetActiveSessionMap();
-		foreach (itr, sessMap)
-		{
 
-		}
-		*/
 	}
+
+	g_pMain->WriteUserLogFile(string_format("[ LOGIN - %d:%d:%d ] ID=%s, PW=%s, Authentication=%s\n",time.GetHour(),time.GetMinute(),time.GetSecond(),account.c_str(),password.c_str(),sAuthMessage.c_str()));
+
 	Send(&result);	
 }
 
