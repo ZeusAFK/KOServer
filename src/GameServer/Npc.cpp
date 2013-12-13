@@ -425,10 +425,9 @@ void CNpc::ChaosStoneProcess(CUser *pUser, uint16 MonsterCount)
 	for (uint8 i = 0; i < MonsterCount;i++)
 	{
 		uint32 nMonsterNum = myrand(0, g_pMain->m_MonsterSummonListZoneArray.GetSize());
-
 		_MONSTER_SUMMON_LIST_ZONE * pMonsterSummonListZone = g_pMain->m_MonsterSummonListZoneArray.GetData(nMonsterNum);
 
-		if (pMonsterSummonListZone != nullptr)
+		if (pMonsterSummonListZone)
 		{
 			if (pMonsterSummonListZone->ZoneID == GetZoneID())
 			{
@@ -436,7 +435,7 @@ void CNpc::ChaosStoneProcess(CUser *pUser, uint16 MonsterCount)
 				{
 					if (std::find(MonsterSpawnedFamily.begin(),MonsterSpawnedFamily.end(),pMonsterSummonListZone->byFamily) == MonsterSpawnedFamily.end())
 					{
-						g_pMain->SpawnEventNpc(pMonsterSummonListZone->sSid, true,GetZoneID(), GetX(), GetY(), GetZ(), 1, CHAOS_STONE_MONSTER_RESPAWN_RADIUS);
+						g_pMain->SpawnEventNpc(pMonsterSummonListZone->sSid, true,GetZoneID(), GetX(), GetY(), GetZ(), 1, CHAOS_STONE_MONSTER_RESPAWN_RADIUS, CHAOS_STONE_MONSTER_LIVE_TIME);
 						MonsterSpawned.push_back(nMonsterNum);
 						MonsterSpawnedFamily.push_back(pMonsterSummonListZone->byFamily);
 						bLoopBack = false;
@@ -446,7 +445,9 @@ void CNpc::ChaosStoneProcess(CUser *pUser, uint16 MonsterCount)
 		}
 
 		if (bLoopBack)
-			i--;			
+			i--;
+		else
+			bLoopBack = true;
 	}
 }
 

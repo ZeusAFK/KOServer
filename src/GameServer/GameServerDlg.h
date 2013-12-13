@@ -282,7 +282,10 @@ public:
 	Unit * GetUnitPtr(uint16 id);
 
 	// Spawns an event NPC/monster
-	void SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, uint16 sCount = 1, uint16 sRadius = 0, int16 nEventRoom = 0);
+	void SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, uint16 sCount = 1, uint16 sRadius = 0, uint16 sDuration = 0, uint8 nation = 0, int16 socketID = -1, int16 nEventRoom = 0);
+
+	// Kill a Npc/Monster
+	void KillNpc(uint16 sNid);
 
 	// Change NPC/Monster properties for Respawn
 	void NpcUpdate(uint16 sSid, bool bIsMonster, uint8 byGroup = 0, uint16 sPid = 0);	

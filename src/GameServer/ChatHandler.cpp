@@ -57,6 +57,7 @@ void CUser::InitChatCommands()
 		{ "zonechange",			&CUser::HandleZoneChangeCommand,				"Teleports you to the specified zone. Arguments: zone ID" },
 		{ "monsummon",			&CUser::HandleMonsterSummonCommand,				"Spawns the specified monster (does not respawn). Arguments: monster's database ID" },
 		{ "npcsummon",			&CUser::HandleNPCSummonCommand,					"Spawns the specified NPC (does not respawn). Arguments: NPC's database ID" },
+		{ "monkill",			&CUser::HandleMonKillCommand,					"Kill a NPC or Monster, Arguments: select an Npc and monster than use this command" },
 		{ "open1",				&CUser::HandleWar1OpenCommand,					"Opens war zone 1" },
 		{ "open2",				&CUser::HandleWar2OpenCommand,					"Opens war zone 2" },
 		{ "open3",				&CUser::HandleWar3OpenCommand,					"Opens war zone 3" },
@@ -441,6 +442,26 @@ COMMAND_HANDLER(CUser::HandleNPCSummonCommand)
 
 	int sSid = atoi(vargs.front().c_str());
 	g_pMain->SpawnEventNpc(sSid, false, GetZoneID(), GetX(), GetY(), GetZ());
+
+	return true;
+}
+
+COMMAND_HANDLER(CUser::HandleMonKillCommand)
+{
+	if (!isGM())
+		return false;
+
+	if (GetTargetID() == 0 && GetTargetID() < NPC_BAND)
+	{
+		// send description
+		g_pMain->SendHelpDescription(this, "Using Sample : Select a NPC or Monster than use +monkills");
+		return false;
+	}
+
+	CNpc *pNpc = g_pMain->GetNpcPtr(GetTargetID());
+
+	if (pNpc)
+		g_pMain->KillNpc(GetTargetID());
 
 	return true;
 }

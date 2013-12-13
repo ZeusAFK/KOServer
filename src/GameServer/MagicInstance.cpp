@@ -48,7 +48,7 @@ void MagicInstance::Run()
 				if (bOpcode != MAGIC_TYPE4_EXTEND && pCaster->m_CoolDownList.find(nSkillID) != pCaster->m_CoolDownList.end())
 				{
 					SkillCooldownList::iterator itr = pCaster->m_CoolDownList.find(nSkillID);
-					if ((UNIXTIME - itr->second) < (float)(pSkill->sReCastTime > 5 ? pSkill->sReCastTime / 10.0f : pSkill->sReCastTime / 100))
+					if ((UNIXTIME - itr->second) < (float)(pSkill->sReCastTime > 5 ? pSkill->sReCastTime / 10.0f : pSkill->sReCastTime / 100) && pSkill->bType[0] != 9)
 						bSendSkillFailed = true;
 					else
 						pCaster->m_CoolDownList.erase(nSkillID);
@@ -2366,13 +2366,9 @@ bool MagicInstance::ExecuteType9()
 	}
 	else if (pType->bStateChange == 9)
 	{
-		if(pSkill == nullptr || pType == nullptr)
-			return false;
-		else if (pCaster->HasSavedMagic(pType->iNum) == false && pCaster->canInstantCast())
-		{
-			g_pMain->SpawnEventNpc(pType->sMonsterNum,true,pCaster->GetZoneID(),pCaster->GetX(),pCaster->GetY(),pCaster->GetZ(),1,2);
-			SendSkill();
-		}
+		buffMap.insert(std::make_pair(pType->bStateChange, _BUFF_TYPE9_INFO(nSkillID, UNIXTIME + pType->sDuration)));
+		g_pMain->SpawnEventNpc(pType->sMonsterNum,true,pCaster->GetZoneID(),pCaster->GetX(),pCaster->GetY(),pCaster->GetZ(),1,2, pType->sDuration, pCaster->GetZoneID() == ZONE_MORADON ? 3 : pCaster->GetNation(), pCaster->GetSocketID());
+		SendSkill();
 	}
 
 	return true;
@@ -2615,6 +2611,10 @@ void MagicInstance::Type9Cancel(bool bRemoveFromMap /*= true*/)
 		pet << uint16(1) << uint16(6);
 		pCaster->Send(&pet);
 		bResponse = 93;
+	}
+	else if (pType->bStateChange == 9)
+	{
+		g_pMain->KillNpc(pCaster->GetSocketID());
 	}
 
 	Packet result(WIZ_MAGIC_PROCESS, uint8(MAGIC_DURATION_EXPIRED));

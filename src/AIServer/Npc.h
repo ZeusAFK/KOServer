@@ -335,7 +335,7 @@ public:
 	void InitUserList();
 	void InitPos();
 
-	void Load(uint16 sNpcID, CNpcTable * proto, bool bMonster);
+	void Load(uint16 sNpcID, CNpcTable * proto, bool bMonster, uint8 nation = 0);
 	void SendMoveResult(float fX, float fY, float fZ, float fSpeed = 0.0f);
 
 protected:

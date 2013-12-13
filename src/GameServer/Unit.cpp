@@ -892,6 +892,8 @@ bool Unit::isAttackable(Unit * pTarget)
 					|| pNpc->GetType() == NPC_GATE2 
 					|| pNpc->GetType() == NPC_VICTORY_GATE)
 					return false;
+				else if (pNpc->m_sSid == 8850 && !GetMap()->canAttackOtherNation())
+					return false;
 #endif
 			}
 		}

@@ -31,6 +31,7 @@ typedef CSTLMap <MAP>						ZoneArray;
 typedef CSTLMap <_K_MONSTER_ITEM>			NpcItemArray;
 typedef CSTLMap <_MAKE_ITEM_GROUP>			MakeItemGroupArray;
 typedef CSTLMap <_SERVER_RESOURCE>			ServerResourceArray;
+typedef CSTLMap <_NPC_LIVE_TIME>			NpcLiveTimeArray;
 
 typedef std::map<uint16, CUser *>			UserSessionMap;
 
@@ -62,7 +63,7 @@ public:
 	void GameServerAcceptThread();
 	void GetServerResource(int nResourceID, std::string * result, ...);
 	bool AddObjectEventNpc(_OBJECT_EVENT* pEvent, MAP * pMap);
-	CNpc * SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, int16 nEventRoom = 0);
+	CNpc * SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, uint16 sDuration = 0, uint8 nation = 0, int16 socketID = -1,int16 nEventRoom = 0);
 	void NpcUpdate(uint16 sSid, bool bIsMonster, uint8 byGroup = 0, uint16 sPid = 0);
 
 	void RemoveEventNPC(CNpc * pNpc);
@@ -78,7 +79,9 @@ public:
 	MAP * GetZoneByID(int zonenumber);
 
 	static uint32 THREADCALL Timer_CheckAliveTest(void * lpParam);
+	static uint32 THREADCALL Timer_CheckLiveTimes(void * lpParam);
 	void CheckAliveTest();
+	void CheckLiveTimes();
 	void DeleteAllUserList(CGameSocket *pSock = nullptr);
 	void Send(Packet * pkt);
 	void SendSystemMsg(std::string & pMsg, int type=0);
@@ -106,6 +109,7 @@ public:
 	NpcItemArray			m_NpcItemArray;
 	MakeItemGroupArray		m_MakeItemGroupArray;
 	ServerResourceArray		m_ServerResourceArray;
+	NpcLiveTimeArray		m_NpcLiveTimeArray;
 
 	Thread m_zoneEventThread;
 

@@ -1082,6 +1082,8 @@ void CUser::SetZoneAbilityChange(uint16 sNewZone)
 	if (!isGM())
 		PlayerRankingProcess(sNewZone,false);
 
+	g_pMain->KillNpc(GetSocketID());
+
 	if (sNewZone == ZONE_BIFROST || sNewZone == ZONE_BATTLE4  || sNewZone ==  ZONE_RONARK_LAND)
 		g_pMain->SendEventRemainingTime(false, this, (uint8)sNewZone);
 }

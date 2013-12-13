@@ -42,4 +42,14 @@ struct _MAKE_ITEM_GROUP
 	std::vector<uint32> iItems;
 };
 
+struct _NPC_LIVE_TIME
+{
+	uint16 nIndex;
+	int16 SocketID;
+	uint16 Nid;
+	uint16 Duration;
+	int32 SpawnedTime;
+
+};
+
 #include "../shared/database/structs.h"

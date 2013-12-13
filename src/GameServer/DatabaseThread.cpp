@@ -439,6 +439,7 @@ void CUser::ReqChangeCape(Packet & pkt)
 void CUser::ReqUserLogOut()
 {
 	PlayerRankingProcess(GetZoneID(), true);
+	g_pMain->KillNpc(GetSocketID());
 
 	if (isInTempleEventZone())
 		RemoveEventUser(GetSocketID());

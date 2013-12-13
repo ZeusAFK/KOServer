@@ -205,6 +205,7 @@ public:
 	CRegion * m_pRegion;
 
 	uint8	m_bZone;
+	int16	m_oSocketID; // owner user
 	int16	m_bEventRoom;
 	float	m_curx, m_curz, m_cury;
 
@@ -270,6 +271,9 @@ public:
 	int16 m_sSpearR;
 	int16 m_sBowR; 
 	uint8 m_byBowRAmount;
+
+	// Guard Summmon
+	uint16 m_sGuardSummonNid;
 
 	struct MagicType3
 	{

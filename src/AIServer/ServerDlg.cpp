@@ -52,6 +52,7 @@ CServerDlg::CServerDlg()
 bool CServerDlg::Startup()
 {
 	g_timerThreads.push_back(new Thread(Timer_CheckAliveTest));
+	g_timerThreads.push_back(new Thread(Timer_CheckLiveTimes));
 
 	m_sMapEventNpc = 0;
 	m_bFirstServerFlag = false;			
@@ -281,6 +282,7 @@ bool CServerDlg::LoadSpawnCallback(OdbcCommand *dbCommand)
 		pNpc->InitPos();
 
 		pNpc->m_bZone = bZoneID;
+		pNpc->m_oSocketID = -1;
 		pNpc->m_bEventRoom = 0;
 
 		nRandom = abs(iLeftX - iRightX);
@@ -557,16 +559,6 @@ void CServerDlg::DeleteUserPtr(uint16 sessionId)
 	}
 }
 
-uint32 THREADCALL CServerDlg::Timer_CheckAliveTest(void * lpParam)
-{
-	while (g_bRunning)
-	{
-		g_pMain->CheckAliveTest();
-		sleep(10 * SECOND);
-	}
-	return 0;
-}
-
 void CServerDlg::CheckAliveTest()
 {
 	Packet result(AG_CHECK_ALIVE_REQ);
@@ -581,6 +573,47 @@ void CServerDlg::CheckAliveTest()
 
 	if (sessCount > 0 && count == 0)
 		DeleteAllUserList();
+}
+
+uint32 THREADCALL CServerDlg::Timer_CheckAliveTest(void * lpParam)
+{
+	while (g_bRunning)
+	{
+		g_pMain->CheckAliveTest();
+		sleep(10 * SECOND);
+	}
+	return 0;
+}
+
+uint32 THREADCALL CServerDlg::Timer_CheckLiveTimes(void * lpParam)
+{
+	while (g_bRunning)
+	{
+		g_pMain->CheckLiveTimes();
+		sleep(1 * SECOND);
+	}
+	return 0;
+}
+
+void CServerDlg::CheckLiveTimes()
+{
+	std::vector<uint16> deleted;
+
+	foreach_stlmap_nolock (itr, m_NpcLiveTimeArray)
+	{
+		if (int32(UNIXTIME) - itr->second->SpawnedTime > itr->second->Duration)
+		{
+			CNpc *pNpc = GetNpcPtr(itr->second->Nid);
+
+			if (pNpc)
+				pNpc->Dead();
+
+			deleted.push_back(itr->second->nIndex);
+		}
+	}
+
+	foreach (itr, deleted)
+		m_NpcLiveTimeArray.DeleteData(*itr);
 }
 
 void CServerDlg::DeleteAllUserList(CGameSocket *pSock)
@@ -686,7 +719,7 @@ bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, MAP * pMap)
 	return true;
 }
 
-CNpc * CServerDlg::SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, int16 nEventRoom)
+CNpc * CServerDlg::SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, uint16 sDuration, uint8 nation, int16 socketID, int16 nEventRoom)
 {
 	CNpcTable * proto = nullptr;
 	MAP * pZone = GetZoneByID(byZone);
@@ -717,13 +750,26 @@ CNpc * CServerDlg::SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, flo
 	pNpc->m_bZone = byZone;
 	pNpc->SetPosition(fX, fY, fZ);
 	pNpc->m_pMap = pZone;
+	pNpc->m_oSocketID = socketID;
 	pNpc->m_bEventRoom = nEventRoom;
 
-	pNpc->Load(++m_TotalNPC, proto, bIsMonster);
+	pNpc->Load(++m_TotalNPC, proto, bIsMonster, nation);
 	pNpc->InitPos();
 
 	itr->second->AddNPC(pNpc);
 	m_arNpc.PutData(pNpc->GetID(), pNpc);
+
+	if (sDuration > 0) // Duration npc or monsters
+	{
+		_NPC_LIVE_TIME * pData = new _NPC_LIVE_TIME();
+		pData->nIndex = m_NpcLiveTimeArray.GetSize() + 1;
+		pData->SocketID = socketID;
+		pData->Nid = pNpc->m_sNid;
+		pData->Duration = sDuration;
+		pData->SpawnedTime = int32(UNIXTIME);
+		if (!m_NpcLiveTimeArray.PutData(pData->nIndex,pData))
+			delete pData;
+	}
 
 	return pNpc;
 }

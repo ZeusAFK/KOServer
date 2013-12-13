@@ -42,6 +42,7 @@ void CUser::Initialize()
 	m_sAddArmourAc = 0;
 	m_bPctArmourAc = 100;
 	m_bPremiumMerchant = false;
+	m_oSocketID = -1;
 	m_bEventRoom = 0;
 
 	InitNpcAttack();

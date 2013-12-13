@@ -671,6 +671,7 @@ public:
 	COMMAND_HANDLER(HandleZoneChangeCommand);
 	COMMAND_HANDLER(HandleMonsterSummonCommand);
 	COMMAND_HANDLER(HandleNPCSummonCommand);
+	COMMAND_HANDLER(HandleMonKillCommand);
 	COMMAND_HANDLER(HandleWar1OpenCommand);
 	COMMAND_HANDLER(HandleWar2OpenCommand);
 	COMMAND_HANDLER(HandleWar3OpenCommand);

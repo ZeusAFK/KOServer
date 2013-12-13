@@ -235,7 +235,7 @@ void CNpc::InitPos()
 	m_fBattlePos_z = fz[m_byBattlePos][m_byPathCount - 1];
 }
 
-void CNpc::Load(uint16 sNpcID, CNpcTable * proto, bool bMonster)
+void CNpc::Load(uint16 sNpcID, CNpcTable * proto, bool bMonster, uint8 nation)
 {
 	m_sNid = sNpcID + NPC_BAND;
 	m_proto = proto;
@@ -245,7 +245,7 @@ void CNpc::Load(uint16 sNpcID, CNpcTable * proto, bool bMonster)
 	m_sSize				= proto->m_sSize;
 	m_iWeapon_1			= proto->m_iWeapon_1;
 	m_iWeapon_2			= proto->m_iWeapon_2;
-	m_bNation			= proto->m_byGroup;
+	m_bNation			= nation == 0 ? proto->m_byGroup : nation;
 	m_bLevel			= (uint8) proto->m_sLevel; // max level used that I know about is 250, no need for 2 bytes
 
 	// Monsters cannot, by design, be friendly to everybody.
@@ -1338,7 +1338,7 @@ bool CNpc::FindEnemy()
 	bool bIsGuard = isGuard();
 
 	// We shouldn't really need this anymore...
-	bool bIsNeutralZone = (GetZoneID() == ZONE_MORADON || GetZoneID() == ZONE_ARENA); // Moradon/Arena
+	bool bIsNeutralZone = (GetZoneID() == ZONE_MORADON || GetZoneID() == ZONE_ARENA); 
 
 	// Disable AI enemy finding (of users) in neutral zones.
 	// Guards and monsters are, however, allowed.
@@ -2328,7 +2328,7 @@ void CNpc::TracingAttack()
 		if (pUser == nullptr
 			|| pUser->isDead()
 			|| pUser->m_bInvisibilityType
-			|| pUser->isGM())
+			|| pUser->isGM() || !GetMap()->canAttackOtherNation())
 			return;
 	}
 	else // Target is an NPC/monster

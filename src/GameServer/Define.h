@@ -190,6 +190,7 @@ enum InOutType
 
 // Where to respawn after dying in the Chaos Stone boss
 #define CHAOS_STONE_MONSTER_RESPAWN_RADIUS 20
+#define CHAOS_STONE_MONSTER_LIVE_TIME 900  // (15 minutes)
 
 // Standard (pre-squared) range used for party rewards and such.
 #define RANGE_50M (50.0f * 50.0f)

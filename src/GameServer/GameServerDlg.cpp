@@ -479,7 +479,7 @@ Unit * CGameServerDlg::GetUnitPtr(uint16 id)
 * @param	sCount	  	Number of spawns to create.
 * @param	sRadius	  	Spawn radius.
 */
-void CGameServerDlg::SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, uint16 sCount /*= 1*/, uint16 sRadius /*= 0*/, int16 nEventRoom)
+void CGameServerDlg::SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, float fX, float fY, float fZ, uint16 sCount /*= 1*/, uint16 sRadius /*= 0*/, uint16 sDuration /*= 0*/, uint8 nation /*= 0*/,int16 socketID /*= -1*/, int16 nEventRoom)
 {
 	Packet result(AG_NPC_SPAWN_REQ);
 	result	<< sSid << bIsMonster 
@@ -487,7 +487,17 @@ void CGameServerDlg::SpawnEventNpc(uint16 sSid, bool bIsMonster, uint8 byZone, f
 		<< uint16(fX * 10) << uint16(fY * 10) << uint16(fZ * 10) 
 		<< sCount 
 		<< sRadius
+		<< sDuration
+		<< nation
+		<< socketID
 		<< nEventRoom;
+	Send_AIServer(&result);
+}
+
+void CGameServerDlg::KillNpc(uint16 sNid)
+{
+	Packet result(AG_NPC_KILL_REQ);
+	result	<< sNid;
 	Send_AIServer(&result);
 }
 
