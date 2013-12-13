@@ -382,10 +382,7 @@ public:
 	int m_nCastleCapture;
 
 	uint8   m_byBattleOpen, m_byOldBattleOpen;					// 0:ÀüÀïÁßÀÌ ¾Æ´Ô, 1:ÀüÀïÁß(±¹°¡°£ÀüÀï), 2:´«½Î¿òÀüÀï
-	uint8	m_byBattleZone;
-	uint8	m_byBattleZoneType;
-	uint8	m_bVictory, m_byOldVictory;
-	uint8	m_bKarusFlag, m_bElmoradFlag;
+	uint8	m_byBattleZone,m_byBattleZoneType,m_bVictory, m_byOldVictory, m_bKarusFlag, m_bElmoradFlag, m_bMiddleStatueNation;
 	int32	m_byBattleOpenedTime;
 	int32	m_byBattleTime;
 	int32	m_byBattleRemainingTime;

@@ -400,6 +400,9 @@ void CNpc::OnRespawn()
 		pData->sNid = m_sNid;
 		pData->RepawnedTime = int32(UNIXTIME);
 
+		if (m_sSid == DODO_CAMP_MONUMENT_SID || LAON_CAMP_MONUMENT_SID)
+			g_pMain->m_bMiddleStatueNation = m_bNation; 
+
 		if (!g_pMain->m_NationMonumentInformationArray.PutData(pData->sSid, pData))
 			delete pData;
 	}

@@ -605,9 +605,11 @@ uint32 CGameServerDlg::Timer_UpdateGameTime(void * lpParam)
 	while (g_bRunning)
 	{
 		g_pMain->UpdateGameTime();
+
 		if (++g_pMain->m_sErrorSocketCount > 3)
 			g_pMain->AIServerConnect();
-		sleep(6 * SECOND);
+
+		sleep(1 * SECOND);
 	}
 	return 0;
 }
@@ -1652,66 +1654,71 @@ void CGameServerDlg::BattleZoneOpenTimer()
 		m_byBattleRemainingTime = m_byBattleTime - WarElapsedTime;
 		uint8 nBattleZone = g_pMain->m_byBattleZone + ZONE_BATTLE_BASE;
 
-		if (m_bVictory == 0 && WarElapsedTime == 300 && WarElapsedTime < m_byBattleTime) // War half time + 15 minutes for Nereid's Island.
+		if (m_bVictory == 0)
 		{
-			m_KnightsRatingArray[KARUS_ARRAY].DeleteAllData();
-			m_KnightsRatingArray[ELMORAD_ARRAY].DeleteAllData();
-			LoadKnightsRankTable(true);
-		}
-		else if (m_bVictory == 0 && WarElapsedTime >= ((m_byBattleTime / 2) + ((m_byBattleTime / 2) / 4)) && WarElapsedTime < m_byBattleTime) // War half time + 15 minutes for Nereid's Island.
-		{
-			if (nBattleZone == ZONE_BATTLE4) // Nereid's Island
+			if (WarElapsedTime == (m_byBattleTime / 24)) // Select captain
 			{
-				if (m_sKarusMonuments >= 7 && m_sElmoMonuments == 0)
-					BattleZoneResult(KARUS);
-				else if (m_sKarusMonuments == 0 && m_sElmoMonuments >= 7)
-					BattleZoneResult(ELMORAD);
+				m_KnightsRatingArray[KARUS_ARRAY].DeleteAllData();
+				m_KnightsRatingArray[ELMORAD_ARRAY].DeleteAllData();
+				LoadKnightsRankTable(true);
 			}
-		}
-		else if (m_bVictory == 0 && WarElapsedTime >= (m_byBattleTime / 2) && WarElapsedTime < m_byBattleTime) // War half time.
-		{
-			if (nBattleZone == ZONE_BATTLE
-				|| nBattleZone == ZONE_BATTLE2 
-				||nBattleZone == ZONE_BATTLE3)
-				BattleWinnerResult(BATTLE_WINNER_NPC);
-			else if (nBattleZone == ZONE_BATTLE4) // Nereid's Island
-				BattleWinnerResult(BATTLE_WINNER_MONUMENT);
-			else if (nBattleZone == ZONE_BATTLE6) // Oreads
-				BattleWinnerResult(BATTLE_WINNER_KILL);
-		}
-		else if (m_bVictory != 0 && WarElapsedTime <  m_byBattleTime) // Won the war.
-		{
-			m_sBattleTimeDelay++;
-
-			if ((m_sBattleTimeDelay * 6) >= 300)
+			else if (WarElapsedTime == (m_byBattleTime / 8)) // War half time + 15 minutes for Nereid's Island.
 			{
-				m_sBattleTimeDelay = 0;
-				Announcement(UNDER_ATTACK_NOTIFY);
+				if (nBattleZone == ZONE_BATTLE4) // Nereid's Island
+				{
+					if (m_sKarusMonuments >= 7 && m_sElmoMonuments == 0)
+						BattleZoneResult(KARUS);
+					else if (m_sKarusMonuments == 0 && m_sElmoMonuments >= 7)
+						BattleZoneResult(ELMORAD);
+				}
+			}
+			else if (WarElapsedTime == (m_byBattleTime / 2)) // War half time.
+			{
+				if (nBattleZone == ZONE_BATTLE
+					|| nBattleZone == ZONE_BATTLE2 
+					||nBattleZone == ZONE_BATTLE3)
+					BattleWinnerResult(BATTLE_WINNER_NPC);
+				else if (nBattleZone == ZONE_BATTLE4) // Nereid's Island
+					BattleWinnerResult(BATTLE_WINNER_MONUMENT);
+				else if (nBattleZone == ZONE_BATTLE6) // Oreads
+					BattleWinnerResult(BATTLE_WINNER_KILL);
 			}
 
-			CheckNationMonumentRewards();
-		}
-		else if (WarElapsedTime >= m_byBattleTime) // War is over.
-			BattleZoneClose();
-		else if (m_bVictory == 0) // War continues.
-		{
 			m_sBattleTimeDelay++;
 
-			if ((m_sBattleTimeDelay * 6) >= (nBattleZone == ZONE_BATTLE4 ? 150 : 300))
+			if (m_sBattleTimeDelay >= (nBattleZone == ZONE_BATTLE4 ? (m_byBattleTime / 48) : (m_byBattleTime / 24)))
 			{
 				m_sBattleTimeDelay = 0;
 				Announcement(DECLARE_BATTLE_ZONE_STATUS);
 			}
 		}
+		else
+		{
+			if (WarElapsedTime <  m_byBattleTime) // Won the war.
+			{
+				m_sBattleTimeDelay++;
+
+				if (m_sBattleTimeDelay >= (m_byBattleTime / 24))
+				{
+					m_sBattleTimeDelay = 0;
+					Announcement(UNDER_ATTACK_NOTIFY);
+				}
+
+				CheckNationMonumentRewards();
+			}
+		}
+
+		if (WarElapsedTime >= m_byBattleTime) // War is over.
+			BattleZoneClose();
 	}
 
 	if (m_byBanishFlag)
 	{
 		m_sBanishDelay++;
 
-		if (m_sBanishDelay == 2)
+		if (m_sBanishDelay == (m_byBattleTime / 360))
 			Announcement(DECLARE_BAN);
-		else if (m_sBanishDelay == 6) {
+		else if (m_sBanishDelay == (m_byBattleTime / 120)) {
 			m_byBanishFlag = false;
 			m_sBanishDelay = 0;
 			BanishLosers();
@@ -1954,6 +1961,7 @@ void CGameServerDlg::ResetBattleZone()
 	m_sElmoMonuments = 0;
 
 	m_NationMonumentInformationArray.DeleteAllData();
+	m_bMiddleStatueNation = 0;
 }
 
 void CGameServerDlg::TempleEventTimer()

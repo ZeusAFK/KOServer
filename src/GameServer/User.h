@@ -445,6 +445,8 @@ public:
 	uint8 GetBeefRoastVictory();
 	uint8 GetRankReward(bool isMonthly);
 	uint8 GetWarVictory();
+	uint8 CheckMiddleStatueCapture();
+	void MoveMiddleStatue();	
 
 	INLINE uint8 GetStat(StatType type)
 	{
@@ -1331,5 +1333,13 @@ public:
 
 	DECLARE_LUA_FUNCTION(GetEventTrigger) {
 		LUA_RETURN(LUA_GET_INSTANCE()->GetEventTrigger());
+	}
+
+	DECLARE_LUA_FUNCTION(CheckMiddleStatueCapture) {
+		LUA_RETURN(LUA_GET_INSTANCE()->CheckMiddleStatueCapture());
+	}
+
+	DECLARE_LUA_FUNCTION(MoveMiddleStatue) {
+		LUA_NO_RETURN(LUA_GET_INSTANCE()->MoveMiddleStatue());
 	}
 };

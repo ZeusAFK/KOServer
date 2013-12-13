@@ -89,3 +89,5 @@ LUA_FUNCTION(GetUserDailyOp);
 LUA_FUNCTION(GetEventTrigger);
 LUA_FUNCTION(GetPremium);
 LUA_FUNCTION(CheckWarVictory);
+LUA_FUNCTION(CheckMiddleStatueCapture);
+LUA_FUNCTION(MoveMiddleStatue);

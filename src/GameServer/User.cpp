@@ -579,7 +579,7 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 			{
 				if (nChangeAmountLoyaltyMonthly > 40)
 					nChangeAmountLoyaltyMonthly += 20;
-				else 
+				else if (nChangeAmountLoyaltyMonthly >= 20 && nChangeAmountLoyaltyMonthly < 40)
 					nChangeAmountLoyaltyMonthly += 10;
 
 				if (amt > m_iLoyaltyMonthly)
@@ -627,7 +627,7 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 			{
 				if (nChangeAmountLoyaltyMonthly > 40)
 					nChangeAmountLoyaltyMonthly -= 20;
-				else 
+				else if (nChangeAmountLoyaltyMonthly >= 20 && nChangeAmountLoyaltyMonthly < 40)
 					nChangeAmountLoyaltyMonthly -= 10;
 
 				if (m_iLoyaltyMonthly + nChangeAmountLoyaltyMonthly > LOYALTY_MAX)

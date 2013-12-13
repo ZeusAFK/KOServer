@@ -182,6 +182,13 @@ enum InOutType
 #define MINI_ARENA_RESPAWN_Z		427
 #define MINI_ARENA_RESPAWN_RADIUS	5
 
+// Where to Warp dodo or laon camp in the enemy nation zone
+#define DODO_CAMP_WARP_X			1054
+#define DODO_CAMP_WARP_Z			1141
+#define LAON_CAMP_WARP_X			1012
+#define LAON_CAMP_WARP_Z			914
+#define DODO_LAON_WARP_RADIUS		5
+
 // Bonus experience in War zones or PK zones
 #define PVP_BONUS_EXP 10000
 

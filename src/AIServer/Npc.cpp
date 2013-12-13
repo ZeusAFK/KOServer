@@ -2328,7 +2328,9 @@ void CNpc::TracingAttack()
 		if (pUser == nullptr
 			|| pUser->isDead()
 			|| pUser->m_bInvisibilityType
-			|| pUser->isGM() || !GetMap()->canAttackOtherNation())
+			|| pUser->isGM() 
+			|| !GetMap()->canAttackOtherNation() 
+			|| pUser->m_oSocketID == m_oSocketID)
 			return;
 	}
 	else // Target is an NPC/monster

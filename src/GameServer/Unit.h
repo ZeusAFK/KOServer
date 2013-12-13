@@ -272,9 +272,6 @@ public:
 	int16 m_sBowR; 
 	uint8 m_byBowRAmount;
 
-	// Guard Summmon
-	uint16 m_sGuardSummonNid;
-
 	struct MagicType3
 	{
 		bool	m_byUsed;		// indicates whether this element is used
