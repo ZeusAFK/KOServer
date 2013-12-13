@@ -487,21 +487,16 @@ void CUser::Update()
 
 	if (m_bResHpType == USER_SITDOWN && g_pMain->m_nBonusTimeInterval > 0 && (UNIXTIME - m_lastBonusTime) >= g_pMain->m_nBonusTimeInterval)
 	{
-		m_lastBonusTime = UNIXTIME; 
+		m_lastBonusTime = UNIXTIME;
 
 		if (!isDead() 
-			&& !isMining()
+			&& !isMining() 
 			&& !isTrading() 
 			&& !isMerchanting())
-		{
 			ExpChange(GetLevel() * 120, true);
-			if ((isInPKZone() || GetZoneID() == ZONE_MORADON) && g_pMain->m_nBonusTimeLoyalty > 0)
-				SendLoyaltyChange(g_pMain->m_nBonusTimeLoyalty, false, true);
-		}
 	}
 	else if (m_bResHpType == USER_STANDING)
 		m_lastBonusTime = UNIXTIME; 
-
 }
 
 void CUser::SetRival(CUser * pRival)
@@ -688,8 +683,8 @@ void CUser::SendLoyaltyChange(int32 nChangeAmount /*= 0*/, bool bIsKillReward /*
 	// Player is give first np, second exp and third meat dumpling etc.
 	if (bIsKillReward && nChangeAmount > 0)
 	{
-		if (g_pMain->m_nBonusPVPWarExp > 0 && (isInPKZone() || GetMap()->isWarZone()))
-			ExpChange(g_pMain->m_nBonusPVPWarExp, true);
+		if (isInPKZone() || GetMap()->isWarZone())
+			ExpChange(PVP_BONUS_EXP, true);
 
 		// Additionally, we should receive a "Meat dumpling"
 		if (isInPKZone())

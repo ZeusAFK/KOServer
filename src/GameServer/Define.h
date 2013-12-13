@@ -182,6 +182,9 @@ enum InOutType
 #define MINI_ARENA_RESPAWN_Z		427
 #define MINI_ARENA_RESPAWN_RADIUS	5
 
+// Bonus experience in War zones or PK zones
+#define PVP_BONUS_EXP 10000
+
 // Automatic Ranking Minutes
 #define RELOAD_KNIGHTS_AND_USER_RATING 30 // Minute
 

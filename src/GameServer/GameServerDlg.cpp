@@ -242,8 +242,6 @@ void CGameServerDlg::GetTimeFromIni()
 	m_nGameMasterRHitDamage = ini.GetInt("SETTINGS","GAME_MASTER_R_HIT_DAMAGE", 30000);
 
 	m_nBonusTimeInterval = ini.GetInt("BONUS","SITDOWN_TIME", 15);
-	m_nBonusTimeLoyalty = ini.GetInt("BONUS","SITDOWN_LOYALTY", 1);
-	m_nBonusPVPWarExp = ini.GetInt("BONUS","PVP_WAR_EXP", 10000);
 
 	for (int i = 0; i < BIFROST_EVENT_COUNT; i++)
 		m_nBifrostTime[i] = ini.GetInt("BIFROST",string_format("START_TIME%d",i+1).c_str(), 0);

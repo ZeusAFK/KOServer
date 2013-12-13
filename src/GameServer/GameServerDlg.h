@@ -402,7 +402,7 @@ public:
 	uint8	m_nPVPMonumentNation[MAX_ZONE_ID];
 	int32	m_nGameMasterRHitDamage;
 
-	int32 m_nBonusTimeInterval, m_nBonusTimeLoyalty, m_nBonusPVPWarExp;
+	int32 m_nBonusTimeInterval;
 
 	uint16	m_nTempleEventRemainSeconds;
 	uint16	m_nTempleEventFinishRemainSeconds;
