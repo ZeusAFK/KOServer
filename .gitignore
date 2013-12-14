@@ -3,7 +3,7 @@
 *.lo
 *.o
 *.obj
-*.lib
+#*.lib
 *.enc
 *.Po
 *.Plo
@@ -12,7 +12,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dll
-*.exe
+#*.exe
 
 # Compiled Static libraries
 *.lai
@@ -35,7 +35,7 @@
 # Debug info
 *.sbr
 *.tlog
-*.pdb
+#*.pdb
 *.ipch
 *.ncb
 *.sdf

@@ -1,7 +1,7 @@
 Knight Online Server
 ========
 
-* Knight Online Server Project
+* Knight Online Server Release
 * Project owner is twostars
 
 * Project Developers ;
