@@ -64,3 +64,6 @@
 
 # Temporary files
 *.tmp
+
+# Database backups
+*.bak
